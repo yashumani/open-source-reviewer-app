@@ -1,0 +1,162 @@
+{
+  "validatedAt": "2026-08-30T17:12:28.685160+00:00",
+  "browser": "system Chromium",
+  "result": "passed",
+  "viewports": [
+    {
+      "name": "desktop",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "report": {
+        "innerWidth": 1440,
+        "innerHeight": 1000,
+        "documentWidth": 1440,
+        "bodyWidth": 1440,
+        "overflow": 0,
+        "decision": "Pilot",
+        "dimensions": 5,
+        "findings": 18,
+        "evidence": 21,
+        "claims": 6,
+        "visibleReport": true
+      },
+      "filteredMediumFindings": 6,
+      "downloadFileName": "sample-org-atlas-board-7f4d9a3c-review.json",
+      "focus": {
+        "tag": "A",
+        "id": "",
+        "outlineStyle": "solid",
+        "outlineWidth": "3px",
+        "proxyTag": "A",
+        "proxyOutlineStyle": "solid",
+        "proxyOutlineWidth": "3px"
+      },
+      "consoleErrors": [],
+      "screenshots": {
+        "landing": "docs/screenshots/landing-desktop.webp",
+        "report": "docs/screenshots/report-desktop.webp"
+      }
+    },
+    {
+      "name": "tablet",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "report": {
+        "innerWidth": 768,
+        "innerHeight": 1024,
+        "documentWidth": 768,
+        "bodyWidth": 768,
+        "overflow": 0,
+        "decision": "Pilot",
+        "dimensions": 5,
+        "findings": 18,
+        "evidence": 21,
+        "claims": 6,
+        "visibleReport": true
+      },
+      "filteredMediumFindings": 6,
+      "downloadFileName": "sample-org-atlas-board-7f4d9a3c-review.json",
+      "focus": {
+        "tag": "A",
+        "id": "",
+        "outlineStyle": "solid",
+        "outlineWidth": "3px",
+        "proxyTag": "A",
+        "proxyOutlineStyle": "solid",
+        "proxyOutlineWidth": "3px"
+      },
+      "consoleErrors": [],
+      "screenshots": {
+        "landing": null,
+        "report": "docs/screenshots/report-tablet.webp"
+      }
+    },
+    {
+      "name": "mobile",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "report": {
+        "innerWidth": 390,
+        "innerHeight": 844,
+        "documentWidth": 390,
+        "bodyWidth": 390,
+        "overflow": 0,
+        "decision": "Pilot",
+        "dimensions": 5,
+        "findings": 18,
+        "evidence": 21,
+        "claims": 6,
+        "visibleReport": true
+      },
+      "filteredMediumFindings": 6,
+      "downloadFileName": "sample-org-atlas-board-7f4d9a3c-review.json",
+      "focus": {
+        "tag": "A",
+        "id": "",
+        "outlineStyle": "solid",
+        "outlineWidth": "3px",
+        "proxyTag": "A",
+        "proxyOutlineStyle": "solid",
+        "proxyOutlineWidth": "3px"
+      },
+      "consoleErrors": [],
+      "screenshots": {
+        "landing": "docs/screenshots/landing-mobile.webp",
+        "report": "docs/screenshots/report-mobile.webp"
+      }
+    },
+    {
+      "name": "small-mobile",
+      "viewport": {
+        "width": 320,
+        "height": 720
+      },
+      "report": {
+        "innerWidth": 320,
+        "innerHeight": 720,
+        "documentWidth": 320,
+        "bodyWidth": 320,
+        "overflow": 0,
+        "decision": "Pilot",
+        "dimensions": 5,
+        "findings": 18,
+        "evidence": 21,
+        "claims": 6,
+        "visibleReport": true
+      },
+      "filteredMediumFindings": 6,
+      "downloadFileName": "sample-org-atlas-board-7f4d9a3c-review.json",
+      "focus": {
+        "tag": "A",
+        "id": "",
+        "outlineStyle": "solid",
+        "outlineWidth": "3px",
+        "proxyTag": "A",
+        "proxyOutlineStyle": "solid",
+        "proxyOutlineWidth": "3px"
+      },
+      "consoleErrors": [],
+      "screenshots": {
+        "landing": null,
+        "report": "docs/screenshots/report-small-mobile.webp"
+      }
+    }
+  ],
+  "checks": [
+    "Landing and sample report render",
+    "No horizontal overflow",
+    "No browser console/page errors",
+    "Pilot decision and five dimensions",
+    "README claim ledger, findings, and evidence",
+    "Finding severity and search filters",
+    "JSON download",
+    "Invalid GitLab host recovery",
+    "Visible keyboard focus"
+  ]
+}

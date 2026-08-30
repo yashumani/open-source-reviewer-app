@@ -1,109 +1,112 @@
-# Open Source Reviewer
+# ForkWise — Open Source Reviewer
 
-> **Work in progress** — active bootstrap development is currently happening directly on `main` so repository progress remains visible.
+> **Active preview:** evidence-first open-source adoption due diligence for public GitHub repositories.
 
-Open Source Reviewer is an evidence-first application for evaluating whether an open-source GitHub repository is appropriate for a specific intended use.
+ForkWise helps an engineer decide whether a repository should be **Adopted, Piloted, Forked, Avoided, or reviewed again with more evidence**. It does not produce a generic popularity or code-quality score. The recommendation changes with the user's intended use, deployment target, data sensitivity, team capacity, and external-service policy.
 
-Instead of producing a generic repository score, the product is being designed to answer a practical engineering question:
+![ForkWise desktop intake](docs/screenshots/landing-desktop.webp)
 
-> **Should we Adopt, Pilot, Fork, Avoid, or gather more evidence before using this repository?**
+## What is implemented
 
-## Current development goal
+- Public `github.com` repository URL parsing and normalization.
+- Default-branch resolution and exact commit pinning.
+- Bounded read-only GitHub metadata, tree, README, release, and high-value text retrieval.
+- Deterministic artifact, language/framework, documentation, license, test/CI, deployment, operations, telemetry/external-service, security, portability, and maintenance rules.
+- **README Reality Check** with Verified, Partial, Unverified, Contradicted, and Not claimed states.
+- Contextual **Fit / Trust / Run / Own / Exit** dimensions.
+- Adopt / Pilot / Fork / Avoid / Insufficient evidence decision engine.
+- Decision confidence, evidence coverage, blockers, adoption effort, ownership burden, unresolved questions, and a repository-specific pilot checklist.
+- File- and metadata-level evidence links pinned to the analyzed commit.
+- JSON and Markdown report exports.
+- Responsive and keyboard-accessible dashboard.
+- Static GitHub Pages build and deployment workflow.
 
-Build the first deployable vertical slice:
+## Safety boundary
 
-```text
-GitHub repository URL
-        +
-intended use and constraints
-        ↓
-read-only repository inspection
-        ↓
-deterministic evidence
-        ↓
-contextual adoption recommendation
-        ↓
-responsive evidence-backed report
+The browser preview performs static inspection only. It does **not** run repository-controlled:
+
+- package installation or lifecycle scripts;
+- tests or build commands;
+- shell scripts or Makefiles;
+- Dockerfiles or containers;
+- GitHub Actions workflows;
+- arbitrary repository HTML or JavaScript.
+
+Repository text is rendered through DOM text nodes rather than `innerHTML`. Suspected credential patterns are redacted before they can enter findings, evidence excerpts, or exports. See [`docs/SECURITY_MODEL.md`](docs/SECURITY_MODEL.md).
+
+## Run locally
+
+Requires Node.js 22 or newer. The production workflow uses Node.js 24.
+
+```bash
+npm run validate
+npm run serve
 ```
 
-The initial target is **self-hosted open-source applications**, where adoption requires understanding not only source code but also deployment, external services, privacy/telemetry, maintenance burden, licensing, tests, CI, and operational requirements.
+Then open `http://127.0.0.1:4173`.
 
-## Current status
+No third-party production or test packages are required. The manual browser-validation script uses Python Playwright and system Chromium when those tools are available:
 
-| Area | Status |
+```bash
+python scripts/ui_validation.py
+```
+
+## Validation status
+
+| Gate | Result |
 | --- | --- |
-| Product requirements | In repository |
-| Development roadmap | In repository |
-| Application UI | Next active milestone |
-| Deterministic evidence engine | Planned in current bootstrap sequence |
-| Automated tests | Planned with implementation |
-| Desktop/mobile validation | Required before deployment |
-| GitHub Pages deployment | Not yet declared live |
-| Backend analysis worker | Later milestone |
+| JavaScript syntax | Passed — 16 JavaScript files |
+| Static structure/accessibility/security checks | Passed |
+| Automated tests | Passed — 49/49 |
+| Production build | Passed |
+| Chromium desktop 1440×1000 | Passed, no horizontal overflow |
+| Chromium tablet 768×1024 | Passed, no horizontal overflow |
+| Chromium mobile 390×844 | Passed, no horizontal overflow |
+| Chromium small mobile 320×720 | Passed, no horizontal overflow |
+| Browser console/page errors | 0 |
 
-No deployment is considered complete until the application passes automated checks, desktop/mobile visual validation, and a live smoke test.
+Full evidence: [`docs/VALIDATION_REPORT.md`](docs/VALIDATION_REPORT.md).
 
-## Product principles
+## Repository map
 
-- **Evidence before opinion** — important conclusions must be traceable to repository evidence.
-- **Context before scoring** — repository suitability depends on what the user intends to do with it.
-- **Static analysis first** — arbitrary repository-controlled code will not be executed in the initial reviewer.
-- **Uncertainty is visible** — missing evidence is not silently treated as failure or success.
-- **AI is not the source of truth** — deterministic evidence remains separate from generated explanations.
-- **Responsive UI is part of done** — desktop and mobile review happens before deployment.
-
-## Planned review dimensions
-
-- **Fit** — does the project satisfy the intended use?
-- **Trust** — what security, license, dependency, and release signals matter?
-- **Run** — what infrastructure and external services are required?
-- **Own** — what maintenance burden would the adopting team inherit?
-- **Exit** — how difficult would replacing or migrating away from the project be?
-
-A key planned capability is **README Reality Check**, which compares repository claims such as self-hosting, Docker deployment, production readiness, or privacy with observable implementation evidence.
+```text
+.
+├── index.html                    # Intake and report application shell
+├── styles.css                   # Responsive design system
+├── src/
+│   ├── app.js                    # Browser orchestration and safe rendering
+│   ├── analyzer.js               # Deterministic evidence + decision engine
+│   ├── export.js                 # JSON and Markdown exports
+│   ├── github.js                 # Read-only, commit-pinned GitHub client
+│   ├── inventory.js              # Artifact classification and content selection
+│   ├── sample.js                 # Embedded auditable sample repository
+│   └── schema.js                 # Report contracts and secret redaction
+├── tests/                        # 49 deterministic tests
+├── scripts/                      # Validation, build, server, and browser checks
+├── docs/                         # Requirements, plans, architecture, rules, evidence
+└── .github/workflows/            # Quality and Pages deployment
+```
 
 ## Documentation
 
-- [`docs/REQUIREMENTS.md`](docs/REQUIREMENTS.md) — product goals, user workflow, requirements, security boundaries, MVP scope, and success criteria.
-- [`docs/DEVELOPMENT_PLAN.md`](docs/DEVELOPMENT_PLAN.md) — active milestones, validation gates, development log, delivered work, limitations, and next task.
+- [`docs/MASTER_DEVELOPMENT_PLAN.md`](docs/MASTER_DEVELOPMENT_PLAN.md) — 24-step execution board and evidence map.
+- [`docs/DEVELOPMENT_PLAN.md`](docs/DEVELOPMENT_PLAN.md) — current development log and next target.
+- [`docs/REQUIREMENTS.md`](docs/REQUIREMENTS.md) — product requirements and intended outcomes.
+- [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) — current browser architecture and module boundaries.
+- [`docs/ANALYZER_RULES.md`](docs/ANALYZER_RULES.md) — deterministic rules and limitations.
+- [`docs/SECURITY_MODEL.md`](docs/SECURITY_MODEL.md) — threat model and safety controls.
+- [`docs/BACKEND_TRANSITION.md`](docs/BACKEND_TRANSITION.md) — production analysis-service plan.
+- [`docs/VALIDATION_REPORT.md`](docs/VALIDATION_REPORT.md) — automated and responsive UI evidence.
 
-These documents are intentionally kept in the repository so that planned work and actually delivered work remain distinguishable.
+## Current limitations
 
-## Development workflow
+- Public GitHub repositories only.
+- Anonymous GitHub API limits apply.
+- At most 24 bounded high-value text artifacts are read in the browser preview.
+- Static indicators do not prove runtime behavior, exploitability, performance, or data flow.
+- Repository history, private advisories, branch protection, and organization settings are not comprehensively assessed.
+- This is decision support, not a security certification or legal opinion.
 
-During the current bootstrap phase, working increments are committed to `main` as requested.
+## Development status
 
-For each development cycle:
-
-1. Select the next milestone.
-2. Implement a complete testable slice.
-3. Add or update automated tests.
-4. Validate runtime/build behavior.
-5. Review desktop UI.
-6. Review mobile UI.
-7. Validate affected error/empty/loading states.
-8. Update the development log.
-9. Commit the working increment to `main`.
-10. Deploy only after the validation gate passes, then smoke-test the live site.
-
-## Security boundary
-
-Open-source repositories are untrusted input. The initial product will inspect them without running repository-defined code.
-
-The bootstrap reviewer must not execute repository-controlled:
-
-- install scripts;
-- package-manager lifecycle scripts;
-- tests;
-- Makefiles;
-- shell scripts;
-- Dockerfiles;
-- GitHub Actions workflows.
-
-Any future sandbox execution capability requires a separate threat model and acceptance criteria.
-
-## Next milestone
-
-**M1 — Visible review prototype**
-
-The next repository increment will add the responsive application shell, GitHub repository input, intended-use controls, validation/loading/error states, and the first evidence-backed review view. It will then proceed through automated and responsive UI validation before deployment.
+Steps 01–23 of the master plan are implemented and locally validated. Step 24—GitHub Actions deployment and live-site smoke validation—is completed only after the workflow created by the release commit succeeds and the resulting Pages URL is checked.

@@ -1,268 +1,84 @@
-# Open Source Reviewer — Development Plan
-
-> Status: Active development
-> Current phase: Bootstrap / first visible release
-> Working branch: `main`
-> Last updated: 2026-08-30
-
-This document is the living execution record for the application. `docs/REQUIREMENTS.md` defines what the product is intended to become; this file records how we are getting there, what has actually shipped to the repository, validation evidence, limitations, and the next development target.
-
-## Current goal
-
-Create the first visible, deployable version of the Open Source Reviewer on `main` so that repository progress is inspectable at all times.
-
-The first usable vertical slice is:
-
-**GitHub URL + intended use → static evidence collection → contextual recommendation → evidence-backed responsive report.**
-
-## Current repository state
-
-At the beginning of this cycle, `main` contained only the repository README. Previous prototype work existed outside the repository and therefore did not count as delivered application functionality.
-
-### Completed in this cycle
-
-- [x] Establish `docs/REQUIREMENTS.md` as the product requirements source.
-- [x] Establish this development plan as the work-in-progress execution record.
-- [ ] Commit the first visible application shell to `main`.
-- [ ] Commit deterministic repository-analysis logic.
-- [ ] Commit automated tests.
-- [ ] Add deployment workflow.
-- [ ] Validate desktop UI.
-- [ ] Validate mobile UI.
-- [ ] Deploy the validated slice.
-- [ ] Smoke-test the live deployment.
-
-## Milestone roadmap
-
-### M0 — Repository foundation
-
-**Goal:** Make the repository self-describing and development visible.
-
-Deliverables:
-
-- Product requirements
-- Development plan
-- README with project purpose, current status, local run instructions, validation command, and roadmap links
-- Basic contribution/development conventions
-
-Acceptance:
-
-- A person opening the repository can understand what is being built, what phase it is in, and what happens next.
-
-### M1 — Visible review prototype
-
-**Goal:** A user can interact with a real UI rather than a documentation-only repository.
-
-Deliverables:
-
-- Responsive application shell
-- Repository URL input
-- Intended-use selector
-- Data-sensitivity/team-capacity controls
-- GitHub URL validation
-- Loading and error states
-- Initial evidence report
-- Decision summary
-
-Acceptance:
-
-- Works through a static web server.
-- Desktop and mobile layouts are visually validated.
-- Invalid repository URLs produce a clear user-facing error.
-- No repository-controlled code is executed.
-
-### M2 — Evidence engine
-
-**Goal:** Make recommendations traceable and deterministic.
-
-Deliverables:
-
-- Commit pinning
-- Repository metadata inventory
-- File inventory
-- README/documentation detection
-- License detection
-- CI/test/container/security-policy signals
-- Operational inventory
-- Evidence-link model
-- Unit tests for deterministic rules
-
-Acceptance:
-
-- Every material deterministic finding has a source/evidence object.
-- Missing evidence is distinguishable from contradictory evidence.
-- Analysis result identifies the commit SHA.
-
-### M3 — README Reality Check
-
-**Goal:** Verify repository claims instead of simply summarizing documentation.
-
-Deliverables:
-
-- Claim extraction model
-- Claim categories
-- Verified / Partial / Unverified / Contradicted states
-- Evidence for each evaluated claim
-- Prominent claim ledger in the report
-
-Acceptance:
-
-- At least the initial self-hosting, Docker/deployment, production-readiness, and privacy/telemetry claim families can be evaluated when relevant evidence exists.
-
-### M4 — Adoption decision model
-
-**Goal:** Turn evidence into a contextual engineering decision.
-
-Deliverables:
-
-- Fit / Trust / Run / Own / Exit dimensions
-- Blocking-risk rules
-- Unresolved-question generation
-- Adoption-effort estimate
-- Ownership-burden estimate
-- Adopt / Pilot / Fork / Avoid / Insufficient Evidence recommendation
-- Decision confidence and evidence coverage
-
-Acceptance:
-
-- Changing the intended use can change the recommendation without changing repository facts.
-- Decision rationale points back to evidence.
-- The UI never presents a recommendation as certainty when evidence coverage is inadequate.
-
-### M5 — Report UX and export
-
-**Goal:** Make results easy to inspect and share.
-
-Deliverables:
-
-- Executive decision view
-- Filterable findings
-- Evidence explorer
-- Operational inventory view
-- Claim ledger view
-- Responsive mobile report
-- Markdown/JSON export
-- Copyable pilot checklist
-
-Acceptance:
-
-- Critical blockers can be found without scrolling through the entire report.
-- Evidence paths remain readable on narrow screens.
-- Export preserves commit SHA and evidence references.
-
-### M6 — Backend analysis service
-
-**Goal:** Move beyond browser/API limitations while preserving safe static analysis.
-
-Deliverables:
-
-- API service
-- Job model
-- Isolated analysis worker
-- Safe archive acquisition/extraction
-- Size/file/time limits
-- Parser/rule registry
-- Persisted versioned reports
-- GitHub API authentication strategy
-
-Acceptance:
-
-- Repository-controlled code still does not execute.
-- Analysis jobs are resource bounded.
-- Reports are reproducible from repository + commit + analyzer version.
-
-### M7 — Advanced intelligence
-
-**Goal:** Add AI synthesis without making AI the source of truth.
-
-Deliverables:
-
-- Evidence-grounded executive summaries
-- Related-finding grouping
-- Prioritized validation plan
-- Repository-specific pilot checklist
-- Prompt-injection defenses for repository content
-
-Acceptance:
-
-- Generated statements can be traced to supplied evidence.
-- The model cannot modify deterministic facts or tool permissions.
-- Unsupported claims are explicitly identified as inference/unknown.
-
-## UI validation gate
-
-Every UI milestone must be reviewed at minimum at:
-
-- Desktop: approximately 1440 px wide
-- Tablet: approximately 768 px wide
-- Mobile: approximately 390 px wide
-- Small mobile: approximately 320 px wide
-
-Review checklist:
-
-- [ ] No unintended horizontal scrolling
-- [ ] Primary action visible and understandable
-- [ ] Forms remain usable with long repository URLs
-- [ ] Long repository/file names wrap or truncate intentionally
-- [ ] Decision/blockers have clear visual hierarchy
-- [ ] Loading state is informative
-- [ ] Error state gives a recovery action
-- [ ] Empty/unknown evidence is not visually confused with success
-- [ ] Keyboard focus is visible
-- [ ] Touch targets are usable on mobile
-
-## Validation gate before deployment
-
-A deployment candidate must pass:
-
-1. Automated unit tests.
-2. JavaScript/build syntax checks.
-3. Local application smoke test.
-4. Desktop visual review.
-5. Mobile visual review.
-6. Error-path review.
-7. Security-boundary check: no arbitrary repository execution.
-8. Documentation/status update.
-
-Deployment should happen only after the candidate passes these checks. After deployment, perform a live smoke test and record the result below.
-
-## Development log
-
-### 2026-08-30 — Cycle 1: project documentation and visible-development reset
-
-**Decision**
-
-Development is being moved to `main` during bootstrap so progress is visible directly in the repository, as requested. The previous local prototype is treated as reference work until its implementation is committed to GitHub.
-
-**Delivered**
-
-- Product requirements document
-- Living development plan
-- Milestone roadmap
-- Definition of done and validation gates
-- Explicit UI validation requirements
-- Static-analysis security boundary
-
-**Validation**
-
-- Documentation created directly on `main`.
-- Requirements and plan distinguish delivered work from planned work.
-
-**Known limitations**
-
-- No application UI is yet committed to `main` at this exact checkpoint.
-- No deployment should be represented as live until a Pages deployment succeeds and is smoke-tested.
-
-**Next target**
-
-M1: commit the first responsive application shell and review workflow to `main`, then add the deterministic analysis engine/tests and run the full UI validation gate before deployment.
+# Open Source Reviewer — Development Plan and Execution Log
+
+> **Status:** Release candidate prepared  
+> **Working branch:** `main`  
+> **Current checkpoint:** Step 24 — deploy and live validate  
+> **Last updated:** 2026-08-30
+
+The 24-step execution board is maintained in [`MASTER_DEVELOPMENT_PLAN.md`](MASTER_DEVELOPMENT_PLAN.md). This file records what changed in each development cycle and the evidence produced.
+
+## Current objective
+
+Publish the evidence-first browser preview from a validated `main` commit, verify the GitHub Actions and Pages results, smoke-test the live sample on desktop and mobile, and record the exact deployment provenance.
+
+## Development cycle — 2026-08-30: full v0.3 implementation
+
+### Delivered
+
+- Replaced the documentation-only repository baseline with a runnable application.
+- Added a professional responsive intake and report experience.
+- Added public GitHub URL validation and a read-only, commit-pinned GitHub client.
+- Added artifact classification and bounded content selection.
+- Added normalized evidence/finding/report contracts.
+- Added deterministic analyzers for maintenance, documentation, license, tests, CI, deployment, operations, external services, telemetry, security posture, secrets, portability, and contributor readiness.
+- Added six README Reality Check claim families.
+- Added contextual Fit/Trust/Run/Own/Exit dimensions and the five-outcome decision engine.
+- Added evidence explorer, filters, JSON/Markdown exports, and pilot checklist.
+- Added quality and GitHub Pages workflows.
+- Added architecture, security, analyzer, validation, and backend-transition documentation.
+
+### Validation evidence
+
+```text
+npm run validate
+  JavaScript syntax: 16 files passed
+  Static validation: passed
+  Tests: 49 passed, 0 failed
+  Production build: passed
+
+python scripts/ui_validation.py
+  Chromium 1440×1000: passed, 0 px overflow
+  Chromium 768×1024: passed, 0 px overflow
+  Chromium 390×844: passed, 0 px overflow
+  Chromium 320×720: passed, 0 px overflow
+  Console/page errors: 0
+```
+
+The browser harness also validated the Pilot decision, five dimensions, 18 sample findings, 21 evidence records, six claim rows, filters, JSON download, invalid-host recovery, and visible focus.
+
+### Security result
+
+- No repository code execution.
+- No `innerHTML` rendering of repository data.
+- Bounded selected text artifacts.
+- Suspected-secret redaction tested in analysis and exports.
+- Exact commit provenance retained.
+- Runtime behavior and coverage uncertainty disclosed.
+
+### Known limitations
+
+- Public GitHub repositories only.
+- Anonymous GitHub API quota.
+- Bounded high-value text inspection rather than complete semantic parsing.
+- Static indicators do not prove runtime behavior.
+- No private repositories, saved history, authenticated accounts, organization policy profiles, or isolated backend workers yet.
+- Live deployment remains unverified until GitHub Actions processes the release commit.
+
+### Next action
+
+1. Commit the complete v0.3 release candidate to `main`.
+2. Inspect the Quality and Pages workflows.
+3. Correct any workflow/deployment failure.
+4. Smoke-test the deployed URL and embedded sample.
+5. Update Step 24 and this log with the live URL, deployment commit, and test result.
 
 ## Decision log
 
 | Date | Decision | Reason |
 | --- | --- | --- |
-| 2026-08-30 | Use `main` directly during bootstrap | Keep development visible in the repository while the first application baseline is established. |
-| 2026-08-30 | Evidence-first product model | Avoid unexplained AI judgments and generic repository scores. |
-| 2026-08-30 | Static analysis before execution | Arbitrary open-source repositories are untrusted code. |
-| 2026-08-30 | Self-hosted apps are the initial target | Operational, privacy, ownership, and deployment questions create a clearer adoption decision use case. |
-| 2026-08-30 | UI validation is part of development, not post-processing | Desktop/mobile usability must be verified before deployment. |
+| 2026-08-30 | Continue bootstrap directly on `main` | Keep progress visible in the repository as requested. |
+| 2026-08-30 | Use a zero-dependency static preview | Immediate auditability, reliable Pages deployment, and minimal supply-chain surface. |
+| 2026-08-30 | Pin every analysis to the default-branch commit | Preserve reproducible evidence when branch contents change. |
+| 2026-08-30 | Read at most 24 high-value text artifacts in the browser | Bound anonymous API usage and repository-content exposure. |
+| 2026-08-30 | Treat the LLM as a future synthesis layer, not a fact source | Deterministic evidence must remain independently testable. |
+| 2026-08-30 | Preserve a separate backend transition | Deeper analysis requires isolated workers rather than more browser privilege. |

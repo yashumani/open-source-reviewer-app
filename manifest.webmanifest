@@ -1,0 +1,12 @@
+{
+  "name": "ForkWise Open Source Reviewer",
+  "short_name": "ForkWise",
+  "description": "Evidence-first open-source adoption due diligence.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#07111f",
+  "theme_color": "#07111f",
+  "icons": [
+    { "src": "assets/mark.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

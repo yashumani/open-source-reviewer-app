@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="description" content="Evidence-first open-source repository adoption due diligence. Decide whether to Adopt, Pilot, Fork, Avoid, or gather more evidence.">
+  <meta name="theme-color" content="#07111f">
+  <meta name="color-scheme" content="dark">
+  <title>ForkWise — Open Source Adoption Review</title>
+  <link rel="icon" href="assets/mark.svg" type="image/svg+xml">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <div class="ambient ambient-one" aria-hidden="true"></div>
+  <div class="ambient ambient-two" aria-hidden="true"></div>
+
+  <header class="site-header">
+    <a class="brand" href="#top" aria-label="ForkWise home">
+      <img src="assets/mark.svg" width="38" height="38" alt="">
+      <span class="brand-copy">
+        <strong>ForkWise</strong>
+        <small>Open Source Reviewer</small>
+      </span>
+    </a>
+    <nav class="header-nav" aria-label="Primary navigation">
+      <a href="#how-it-works">How it works</a>
+      <a href="#security-boundary">Safety</a>
+      <a href="docs/MASTER_DEVELOPMENT_PLAN.md">Development plan</a>
+    </nav>
+    <span class="build-pill" title="Current application version">v0.3 preview</span>
+  </header>
+
+  <main id="main-content">
+    <section id="intake-view" class="intake-view" aria-labelledby="hero-title">
+      <div id="top" class="hero-shell">
+        <div class="hero-copy">
+          <div class="eyebrow"><span class="pulse-dot" aria-hidden="true"></span> Evidence-first adoption due diligence</div>
+          <h1 id="hero-title">Know what you inherit<br><span>before you fork.</span></h1>
+          <p class="hero-lead">Paste a public GitHub repository, tell us how you intend to use it, and receive a commit-pinned recommendation: <strong>Adopt, Pilot, Fork, Avoid, or Insufficient evidence.</strong></p>
+          <div class="hero-proof" aria-label="Product principles">
+            <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/></svg>No repository code execution</span>
+            <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></svg>File-level evidence</span>
+            <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 2v4M16 2v4M3 10h18"/><rect x="3" y="4" width="18" height="18" rx="2"/><path d="m9 16 2 2 4-4"/></svg>Commit-pinned reports</span>
+          </div>
+        </div>
+
+        <section class="review-card" aria-labelledby="review-card-title">
+          <div class="card-heading">
+            <div>
+              <span class="step-kicker">New review</span>
+              <h2 id="review-card-title">Describe the adoption decision</h2>
+            </div>
+            <button id="sample-review" class="button button-ghost button-small" type="button">Load sample</button>
+          </div>
+
+          <form id="review-form" novalidate>
+            <div class="field-group">
+              <label for="repo-url">Public GitHub repository</label>
+              <div class="url-field-wrap">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3.3-.4 6.8-1.6 6.8-7A5.4 5.4 0 0 0 19.4 4 5 5 0 0 0 19.3.5S18.2.1 15 1.8a13.4 13.4 0 0 0-7 0C4.8.1 3.7.5 3.7.5A5 5 0 0 0 3.6 4a5.4 5.4 0 0 0-1.4 3.7c0 5.4 3.5 6.6 6.8 7A4.8 4.8 0 0 0 8 18v4"/></svg>
+                <input id="repo-url" name="repo-url" type="url" inputmode="url" autocomplete="url" placeholder="https://github.com/owner/repository" aria-describedby="repo-help url-error" required>
+              </div>
+              <p id="repo-help" class="field-help">Public github.com repositories only during the static preview.</p>
+              <p id="url-error" class="field-error" role="alert" hidden></p>
+            </div>
+
+            <fieldset class="field-group">
+              <legend>How will you use it?</legend>
+              <div class="intent-grid">
+                <label class="choice-card">
+                  <input type="radio" name="intent" value="self-host" checked>
+                  <span class="choice-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="6" rx="2"/><rect x="3" y="14" width="18" height="6" rx="2"/><path d="M7 7h.01M7 17h.01"/></svg></span>
+                  <span><strong>Self-host</strong><small>Operate the application</small></span>
+                </label>
+                <label class="choice-card">
+                  <input type="radio" name="intent" value="dependency">
+                  <span class="choice-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m12 2 9 5-9 5-9-5 9-5Z"/><path d="m3 12 9 5 9-5M3 17l9 5 9-5"/></svg></span>
+                  <span><strong>Dependency</strong><small>Integrate the package</small></span>
+                </label>
+                <label class="choice-card">
+                  <input type="radio" name="intent" value="fork">
+                  <span class="choice-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="6" cy="4" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="6" cy="20" r="2"/><path d="M6 6v12M18 8c0 6-12 2-12 8"/></svg></span>
+                  <span><strong>Fork</strong><small>Customize and own it</small></span>
+                </label>
+                <label class="choice-card">
+                  <input type="radio" name="intent" value="contribute">
+                  <span class="choice-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4Z"/></svg></span>
+                  <span><strong>Contribute</strong><small>Join the project</small></span>
+                </label>
+              </div>
+            </fieldset>
+
+            <div class="field-group">
+              <label for="use-case">What are you evaluating?</label>
+              <textarea id="use-case" name="use-case" rows="3" maxlength="1000" placeholder="Example: Self-host an internal analytics application for 200 employees. Customer data must remain private."></textarea>
+            </div>
+
+            <div class="form-grid">
+              <div class="field-group compact-field">
+                <label for="deployment-target">Deployment target</label>
+                <select id="deployment-target" name="deployment-target">
+                  <option value="flexible">Flexible / unknown</option>
+                  <option value="docker" selected>Docker / Compose</option>
+                  <option value="kubernetes">Kubernetes</option>
+                  <option value="managed">Managed platform</option>
+                  <option value="local">Local / desktop</option>
+                </select>
+              </div>
+              <div class="field-group compact-field">
+                <label for="sensitivity">Data sensitivity</label>
+                <select id="sensitivity" name="sensitivity">
+                  <option value="public">Public</option>
+                  <option value="internal" selected>Internal</option>
+                  <option value="confidential">Confidential</option>
+                  <option value="regulated">Regulated</option>
+                </select>
+              </div>
+              <div class="field-group compact-field">
+                <label for="team-size">Engineering capacity</label>
+                <select id="team-size" name="team-size">
+                  <option value="small" selected>Small team</option>
+                  <option value="medium">Medium team</option>
+                  <option value="large">Large / platform team</option>
+                </select>
+              </div>
+              <div class="field-group compact-field">
+                <label for="external-services">External services</label>
+                <select id="external-services" name="external-services">
+                  <option value="allowed">Allowed</option>
+                  <option value="disclosed" selected>Must be disclosed</option>
+                  <option value="prohibited">Prohibited</option>
+                </select>
+              </div>
+            </div>
+
+            <button id="analyze-button" class="button button-primary button-full" type="submit">
+              <span>Review repository</span>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </button>
+          </form>
+        </section>
+      </div>
+
+      <section id="analysis-progress" class="progress-panel" aria-live="polite" aria-labelledby="progress-title" hidden>
+        <div class="progress-orb" aria-hidden="true"><span></span><span></span><span></span></div>
+        <div class="progress-copy">
+          <span class="step-kicker">Static review in progress</span>
+          <h2 id="progress-title">Preparing repository evidence</h2>
+          <p id="progress-detail">The reviewer is initializing.</p>
+          <div class="progress-track" aria-hidden="true"><span id="progress-bar"></span></div>
+          <ol id="progress-steps" class="progress-steps"></ol>
+        </div>
+      </section>
+
+      <section id="how-it-works" class="process-section" aria-labelledby="process-title">
+        <div class="section-heading centered">
+          <span class="eyebrow">Context changes the answer</span>
+          <h2 id="process-title">From repository URL to adoption decision</h2>
+          <p>The reviewer separates observable facts from interpretation, then applies your deployment, data, and ownership constraints.</p>
+        </div>
+        <div class="process-grid">
+          <article><span>01</span><h3>Pin evidence</h3><p>Resolve the default branch to an exact commit and build a bounded, read-only file inventory.</p></article>
+          <article><span>02</span><h3>Verify claims</h3><p>Compare README promises with deployment, test, security, telemetry, and portability evidence.</p></article>
+          <article><span>03</span><h3>Apply context</h3><p>Evaluate Fit, Trust, Run, Own, and Exit against your intended use and constraints.</p></article>
+          <article><span>04</span><h3>Decide next action</h3><p>Receive an auditable recommendation, blockers, unresolved questions, and a pilot checklist.</p></article>
+        </div>
+      </section>
+
+      <section id="security-boundary" class="safety-section" aria-labelledby="safety-title">
+        <div class="safety-copy">
+          <span class="eyebrow">Designed for untrusted repositories</span>
+          <h2 id="safety-title">Static inspection. No install scripts. No repository execution.</h2>
+          <p>ForkWise reads public metadata and a bounded set of high-value text artifacts. It does not run package managers, tests, shell scripts, Dockerfiles, Makefiles, or repository-controlled workflows.</p>
+        </div>
+        <div class="safety-list">
+          <span>Commit-pinned provenance</span>
+          <span>Suspected secret redaction</span>
+          <span>Prompt-injection boundary</span>
+          <span>Explicit uncertainty</span>
+        </div>
+      </section>
+    </section>
+
+    <section id="report" class="report-view" aria-labelledby="report-name" hidden>
+      <div class="report-toolbar">
+        <div class="report-identity">
+          <button id="new-review" class="icon-button" type="button" aria-label="Start a new review"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg></button>
+          <div>
+            <span class="step-kicker">Commit-pinned review</span>
+            <h1 id="report-name">Repository</h1>
+            <p id="report-description"></p>
+          </div>
+        </div>
+        <div class="report-actions">
+          <a id="source-link" class="button button-ghost button-small" href="#" target="_blank" rel="noreferrer">View source</a>
+          <button id="export-markdown" class="button button-ghost button-small" type="button">Export Markdown</button>
+          <button id="export-json" class="button button-secondary button-small" type="button">Export JSON</button>
+        </div>
+      </div>
+
+      <div id="report-provenance" class="provenance-bar"></div>
+
+      <section id="decision-banner" class="decision-banner" aria-labelledby="decision-value">
+        <div class="decision-main">
+          <span class="step-kicker">Recommendation</span>
+          <div class="decision-title-row">
+            <h2 id="decision-value">Pilot</h2>
+            <span id="commit-pill" class="commit-pill"></span>
+          </div>
+          <p id="decision-summary" class="decision-summary"></p>
+          <div class="next-action"><span>Next action</span><p id="next-action-text"></p></div>
+        </div>
+        <div class="decision-metrics" aria-label="Decision metrics">
+          <article><span>Confidence</span><strong id="confidence-value">—</strong></article>
+          <article><span>Evidence</span><strong id="coverage-value">—</strong></article>
+          <article><span>Blockers</span><strong id="blocker-value">—</strong></article>
+          <article><span>Ownership</span><strong id="burden-value">—</strong></article>
+          <article><span>Adoption effort</span><strong id="effort-value">—</strong></article>
+        </div>
+      </section>
+
+      <nav class="report-nav" aria-label="Report sections">
+        <a href="#overview-section">Overview</a>
+        <a href="#reality-section">Reality Check</a>
+        <a href="#findings-section">Findings</a>
+        <a href="#operations-section">Operations</a>
+        <a href="#evidence-section">Evidence</a>
+        <a href="#pilot-section">Pilot plan</a>
+      </nav>
+
+      <div class="report-grid">
+        <div class="report-primary">
+          <section id="overview-section" class="report-section">
+            <div class="section-heading inline-heading">
+              <div><span class="step-kicker">Executive overview</span><h2>Why this decision</h2></div>
+            </div>
+            <div id="decision-reasons" class="reason-grid"></div>
+            <h3 class="subsection-title">Five adoption dimensions</h3>
+            <div id="dimension-grid" class="dimension-grid"></div>
+          </section>
+
+          <section id="reality-section" class="report-section">
+            <div class="section-heading inline-heading">
+              <div><span class="step-kicker">README Reality Check</span><h2>Claims versus repository evidence</h2></div>
+              <p>Absence of evidence is kept separate from contradictory evidence.</p>
+            </div>
+            <div id="claim-ledger" class="claim-ledger"></div>
+          </section>
+
+          <section id="findings-section" class="report-section">
+            <div class="section-heading inline-heading">
+              <div><span class="step-kicker">Deterministic review</span><h2>Findings <span id="findings-count" class="count-badge">0</span></h2></div>
+            </div>
+            <div class="finding-tools">
+              <label class="search-field" for="findings-search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><input id="findings-search" type="search" placeholder="Search findings"></label>
+              <label><span class="sr-only">Filter by dimension</span><select id="dimension-filter"><option value="all">All dimensions</option><option>Fit</option><option>Trust</option><option>Run</option><option>Own</option><option>Exit</option></select></label>
+              <label><span class="sr-only">Filter by severity</span><select id="severity-filter"><option value="all">All severities</option><option value="critical">Critical</option><option value="high">High</option><option value="medium">Medium</option><option value="low">Low</option><option value="info">Info</option></select></label>
+            </div>
+            <div id="findings-list" class="findings-list"></div>
+          </section>
+
+          <section id="operations-section" class="report-section">
+            <div class="section-heading inline-heading">
+              <div><span class="step-kicker">Operational bill of materials</span><h2>What you may inherit</h2></div>
+            </div>
+            <div id="operations-list" class="operations-grid"></div>
+            <h3 class="subsection-title">Technology signals</h3>
+            <div id="technology-list" class="chip-list"></div>
+          </section>
+
+          <section id="evidence-section" class="report-section">
+            <div class="section-heading inline-heading">
+              <div><span class="step-kicker">Traceable sources</span><h2>Evidence <span id="evidence-count" class="count-badge">0</span></h2></div>
+            </div>
+            <div id="evidence-list" class="evidence-list"></div>
+          </section>
+
+          <section id="pilot-section" class="report-section">
+            <div class="section-heading inline-heading">
+              <div><span class="step-kicker">Decision closure</span><h2>Repository-specific pilot checklist</h2></div>
+              <button id="copy-checklist" class="button button-ghost button-small" type="button">Copy checklist</button>
+            </div>
+            <div id="pilot-checklist" class="checklist"></div>
+          </section>
+        </div>
+
+        <aside class="report-sidebar" aria-label="Report supporting details">
+          <section class="sidebar-card">
+            <span class="step-kicker">Repository facts</span>
+            <h2>Snapshot</h2>
+            <dl id="repo-facts" class="facts-list"></dl>
+          </section>
+          <section class="sidebar-card blocker-card">
+            <span class="step-kicker">Blocking risks</span>
+            <h2>Must resolve</h2>
+            <div id="blocker-list" class="sidebar-list"></div>
+          </section>
+          <section class="sidebar-card">
+            <span class="step-kicker">Unresolved questions</span>
+            <h2>Validate next</h2>
+            <div id="question-list" class="sidebar-list numbered"></div>
+          </section>
+          <section class="sidebar-card limitation-card">
+            <span class="step-kicker">Review boundary</span>
+            <h2>Limitations</h2>
+            <ul id="limitations-list" class="limitations-list"></ul>
+          </section>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>ForkWise is decision support—not a security certification, legal opinion, or substitute for runtime validation.</p>
+    <a href="https://github.com/yashumani/open-source-reviewer-app" target="_blank" rel="noreferrer">Source repository</a>
+  </footer>
+
+  <div id="live-status" class="sr-only" aria-live="polite"></div>
+  <script type="module" src="src/app.js"></script>
+</body>
+</html>
