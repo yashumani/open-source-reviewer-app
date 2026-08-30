@@ -1,4 +1,4 @@
-name: Deploy GitHub Pages
+name: Pages Readiness and Deploy
 
 on:
   push:
@@ -18,23 +18,41 @@ jobs:
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    outputs:
+      pages_ready: ${{ steps.pages.outcome == 'success' }}
     steps:
       - name: Check out repository
         uses: actions/checkout@v7
+
       - name: Set up Node.js
         uses: actions/setup-node@v7
         with:
           node-version: 24
-      - name: Configure Pages
-        uses: actions/configure-pages@v6
+
       - name: Validate and build
         run: npm run validate
+
+      - name: Configure Pages when enabled
+        id: pages
+        continue-on-error: true
+        uses: actions/configure-pages@v6
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v5
         with:
           path: ./dist
 
+      - name: Report Pages readiness
+        if: steps.pages.outcome != 'success'
+        run: |
+          echo '::warning::GitHub Pages is not enabled/configured for this repository yet. Validation and the deployable artifact succeeded; deployment will run automatically after Pages is enabled with GitHub Actions as the source.'
+          echo '### Pages deployment gate' >> "$GITHUB_STEP_SUMMARY"
+          echo '' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Application validation and artifact creation succeeded.' >> "$GITHUB_STEP_SUMMARY"
+          echo 'GitHub Pages is currently disabled or not configured for Actions, so the deploy job is intentionally skipped rather than failing CI.' >> "$GITHUB_STEP_SUMMARY"
+
   deploy:
+    if: needs.build.outputs.pages_ready == 'true'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
