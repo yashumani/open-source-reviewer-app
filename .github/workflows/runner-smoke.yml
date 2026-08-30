@@ -1,0 +1,31 @@
+name: Hosted Runner Smoke
+
+on:
+  pull_request:
+    paths:
+      - "src/runner-client.js"
+      - "scripts/smoke-runner.mjs"
+      - ".github/workflows/runner-smoke.yml"
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  end-to-end:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+      - name: Validate hosted runner lifecycle
+        env:
+          FORKWISE_RUNNER_BASE: https://forkwise-runner.lovable.app/functions/v1/review-api
+          FORKWISE_SMOKE_REPOSITORY: https://github.com/octocat/Hello-World
+        run: node scripts/smoke-runner.mjs
