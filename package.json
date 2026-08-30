@@ -1,9 +1,9 @@
 {
   "name": "forkwise-open-source-reviewer",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "private": true,
   "type": "module",
-  "description": "Evidence-first open-source adoption due diligence from a public GitHub repository URL.",
+  "description": "Evidence-first open-source adoption due diligence with a hosted static-analysis runner and operator console.",
   "scripts": {
     "dev": "node scripts/serve.mjs",
     "serve": "node scripts/serve.mjs",
@@ -13,6 +13,7 @@
     "check": "npm run check:syntax && npm run check:static",
     "test": "node --test",
     "test:backend": "node --test tests/backend.test.js",
+    "test:runner": "node --test tests/runner-client.test.js tests/operator-model.test.js",
     "build": "node scripts/build.mjs",
     "validate": "npm run check && npm test && npm run build"
   },

@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="description" content="ForkWise Runner operator console: live health, recent jobs, safety limits, and end-to-end API smoke testing.">
+  <meta name="theme-color" content="#07111f">
+  <meta name="color-scheme" content="dark light">
+  <meta name="forkwise-runner-base" content="https://forkwise-runner.lovable.app/functions/v1/review-api">
+  <title>ForkWise Runner — Operator Console</title>
+  <link rel="icon" href="assets/mark.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="operator.css">
+</head>
+<body>
+  <a class="skip-link" href="#operator-main">Skip to operator console</a>
+  <div class="background-grid" aria-hidden="true"></div>
+  <div class="glow glow-one" aria-hidden="true"></div>
+  <div class="glow glow-two" aria-hidden="true"></div>
+
+  <header class="operator-header">
+    <a class="brand" href="index.html" aria-label="ForkWise reviewer home">
+      <img src="assets/mark.svg" width="38" height="38" alt="">
+      <span><strong>ForkWise</strong><small>Runner operations</small></span>
+    </a>
+    <nav aria-label="Operator navigation">
+      <a href="index.html">Reviewer</a>
+      <a href="docs/RUNNER_OPERATIONS.md">Runbook</a>
+      <a href="https://github.com/yashumani/open-source-reviewer-app" target="_blank" rel="noreferrer">Source ↗</a>
+    </nav>
+    <button id="theme-toggle" class="icon-button" type="button" aria-label="Switch theme">
+      <svg class="sun-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41"/></svg>
+      <svg class="moon-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8Z"/></svg>
+    </button>
+  </header>
+
+  <main id="operator-main" class="operator-shell">
+    <section class="hero" aria-labelledby="operator-title">
+      <div>
+        <div class="eyebrow"><span></span> Hosted static-analysis control plane</div>
+        <h1 id="operator-title">ForkWise Runner<br><em>operator console</em></h1>
+        <p>Observe service health, confirm the static-only safety boundary, inspect the anonymous beta workload, and run a real repository review through the public API.</p>
+      </div>
+      <div class="health-card">
+        <div id="health-badge" class="health-badge" data-state="loading">
+          <span aria-hidden="true"></span>
+          <strong id="health-label">Checking</strong>
+        </div>
+        <p>Last health check</p>
+        <strong id="health-checked-at">Connecting to runner…</strong>
+        <button id="refresh-status" class="button button-secondary" type="button">Refresh status</button>
+      </div>
+    </section>
+
+    <section class="service-grid" aria-label="Service contract">
+      <article class="metric-card accent">
+        <span>Service</span>
+        <strong id="service-name">forkwise-runner</strong>
+        <small>Public repository analysis</small>
+      </article>
+      <article class="metric-card">
+        <span>Report schema</span>
+        <strong id="schema-version">forkwise-report/v1</strong>
+        <small>Versioned API contract</small>
+      </article>
+      <article class="metric-card">
+        <span>Analyzer</span>
+        <strong id="analyzer-version">forkwise-hosted/0.1.0</strong>
+        <small>Deterministic ruleset</small>
+      </article>
+      <article class="metric-card">
+        <span>Execution</span>
+        <strong id="execution-mode">static-only</strong>
+        <small>No repository code runs</small>
+      </article>
+    </section>
+
+    <section class="panel jobs-panel" aria-labelledby="jobs-title">
+      <header class="panel-heading">
+        <div>
+          <span class="section-kicker">Anonymous beta workload</span>
+          <h2 id="jobs-title">Jobs in the last 24 hours</h2>
+        </div>
+        <p>Last accepted job: <strong id="last-job-at">Loading…</strong></p>
+      </header>
+      <div class="job-grid">
+        <article><span>Total</span><strong id="jobs-total">0</strong></article>
+        <article data-state="queued"><span>Queued</span><strong id="jobs-queued">0</strong></article>
+        <article data-state="running"><span>Running</span><strong id="jobs-running">0</strong></article>
+        <article data-state="completed"><span>Completed</span><strong id="jobs-completed">0</strong></article>
+        <article data-state="failed"><span>Failed</span><strong id="jobs-failed">0</strong></article>
+      </div>
+    </section>
+
+    <section class="two-column">
+      <article class="panel boundary-panel" aria-labelledby="boundary-title">
+        <header class="panel-heading compact">
+          <div>
+            <span class="section-kicker">Hard safety boundary</span>
+            <h2 id="boundary-title">Inspection without execution</h2>
+          </div>
+          <span class="shield" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/></svg>
+          </span>
+        </header>
+        <p>The runner calls GitHub’s public REST API, pins the default branch to one commit, and reads a bounded set of UTF-8 text artifacts. It never runs package managers, tests, shell scripts, Dockerfiles, Makefiles, workflows, or application code.</p>
+        <ul class="boundary-list">
+          <li><span>01</span><div><strong>Public GitHub only</strong><small>github.com repository URLs; no credentials in URLs.</small></div></li>
+          <li><span>02</span><div><strong>Commit-pinned evidence</strong><small>Every evidence URL points to the reviewed commit SHA.</small></div></li>
+          <li><span>03</span><div><strong>Bounded acquisition</strong><small id="artifact-limit">24 text artifacts</small></div></li>
+          <li><span>04</span><div><strong>Secret redaction</strong><small>Suspected keys and tokens are removed from excerpts and errors.</small></div></li>
+        </ul>
+      </article>
+
+      <article class="panel limits-panel" aria-labelledby="limits-title">
+        <header class="panel-heading compact">
+          <div>
+            <span class="section-kicker">Free beta controls</span>
+            <h2 id="limits-title">Capacity and retention</h2>
+          </div>
+        </header>
+        <dl class="limit-list">
+          <div><dt>Allowed browser origin</dt><dd>https://yashumani.github.io</dd></div>
+          <div><dt>Report retention</dt><dd id="retention-days">7 days</dd></div>
+          <div><dt>Per-client rate</dt><dd id="rate-limit">8 / 10 min</dd></div>
+          <div><dt>Request body</dt><dd>8 KiB</dd></div>
+          <div><dt>Analysis deadline</dt><dd>45 seconds</dd></div>
+          <div><dt>Direct table access</dt><dd>Denied by RLS</dd></div>
+        </dl>
+        <div class="api-base">
+          <span>Public API base</span>
+          <code id="api-base-url">Loading…</code>
+        </div>
+      </article>
+    </section>
+
+    <section class="panel test-panel" aria-labelledby="test-title">
+      <header class="panel-heading">
+        <div>
+          <span class="section-kicker">End-to-end verification</span>
+          <h2 id="test-title">Run a real API smoke test</h2>
+          <p>This submits a public repository, polls the durable job, and retrieves a report. The console displays a safe summary only.</p>
+        </div>
+        <div id="test-status" class="test-status" data-state="idle" role="status">Ready</div>
+      </header>
+
+      <form id="operator-test-form" class="test-form">
+        <div class="field field-wide">
+          <label for="test-repository">Public GitHub repository</label>
+          <input id="test-repository" name="repository" type="url" required value="https://github.com/octocat/Hello-World" autocomplete="url">
+        </div>
+        <div class="field field-wide">
+          <label for="test-use-case">Evaluation context</label>
+          <textarea id="test-use-case" name="use-case" rows="2" maxlength="1000">Validate the hosted runner with a small public repository before wiring production clients.</textarea>
+        </div>
+        <div class="field">
+          <label for="test-intent">Intent</label>
+          <select id="test-intent" name="intent">
+            <option value="self-host" selected>Self-host</option>
+            <option value="dependency">Dependency</option>
+            <option value="fork">Fork</option>
+            <option value="contribute">Contribute</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="test-deployment">Deployment</label>
+          <select id="test-deployment" name="deployment">
+            <option value="flexible" selected>Flexible</option>
+            <option value="docker">Docker</option>
+            <option value="kubernetes">Kubernetes</option>
+            <option value="managed">Managed</option>
+            <option value="local">Local</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="test-sensitivity">Sensitivity</label>
+          <select id="test-sensitivity" name="sensitivity">
+            <option value="public" selected>Public</option>
+            <option value="internal">Internal</option>
+            <option value="confidential">Confidential</option>
+            <option value="regulated">Regulated</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="test-team-size">Team</label>
+          <select id="test-team-size" name="team-size">
+            <option value="small" selected>Small</option>
+            <option value="medium">Medium</option>
+            <option value="large">Large</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="test-external-services">External services</label>
+          <select id="test-external-services" name="external-services">
+            <option value="allowed">Allowed</option>
+            <option value="disclosed" selected>Must be disclosed</option>
+            <option value="prohibited">Prohibited</option>
+          </select>
+        </div>
+        <div class="test-actions">
+          <button id="run-test" class="button button-primary" type="submit">
+            <span>Run smoke test</span>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </button>
+          <button id="cancel-test" class="button button-secondary" type="button" disabled>Cancel</button>
+        </div>
+      </form>
+
+      <div class="progress-block">
+        <div class="progress-meta">
+          <div><span>Stage</span><strong id="test-stage">Not started</strong></div>
+          <div><span>Message</span><strong id="test-message">Submit a review to begin.</strong></div>
+          <strong id="test-percent">0%</strong>
+        </div>
+        <div id="test-progress" class="progress-track" role="progressbar" aria-label="Smoke test progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+          <span id="test-progress-fill"></span>
+        </div>
+      </div>
+
+      <section id="test-result" class="result-card" aria-labelledby="result-title" hidden>
+        <header>
+          <div><span class="section-kicker">Safe result summary</span><h3 id="result-title">Runner report retrieved</h3></div>
+          <strong id="result-decision">—</strong>
+        </header>
+        <dl class="result-grid">
+          <div><dt>Repository</dt><dd id="result-repository">—</dd></div>
+          <div><dt>Confidence</dt><dd id="result-confidence">—</dd></div>
+          <div><dt>Evidence coverage</dt><dd id="result-coverage">—</dd></div>
+          <div><dt>Blockers</dt><dd id="result-blockers">—</dd></div>
+          <div><dt>Commit</dt><dd id="result-commit">—</dd></div>
+          <div><dt>Generated</dt><dd id="result-generated">—</dd></div>
+        </dl>
+        <div class="result-dimensions-wrap">
+          <span>Dimensions</span>
+          <ul id="result-dimensions" class="result-dimensions"></ul>
+        </div>
+        <p><strong>Next action:</strong> <span id="result-next-action">—</span></p>
+      </section>
+    </section>
+
+    <section class="panel endpoint-panel" aria-labelledby="endpoint-title">
+      <header class="panel-heading compact">
+        <div><span class="section-kicker">Versioned contract</span><h2 id="endpoint-title">Public endpoints</h2></div>
+      </header>
+      <div class="endpoint-list">
+        <article><span>GET</span><code>/health</code><p>Service, analyzer, schema, execution mode.</p></article>
+        <article><span>POST</span><code>/v1/reviews</code><p>Accept a normalized context and return durable job URLs.</p></article>
+        <article><span>GET</span><code>/v1/jobs/:id</code><p>Queued, running, completed, or failed with progress.</p></article>
+        <article><span>GET</span><code>/v1/reports/:id</code><p>Retrieve the completed <code>forkwise-report/v1</code> object.</p></article>
+        <article><span>GET</span><code>/v1/stats</code><p>Recent aggregate job counts; no repository excerpts.</p></article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="operator-footer">
+    <p>ForkWise Runner · static-only public beta · reports expire automatically.</p>
+    <div><a href="index.html">Reviewer</a><a href="docs/RUNNER_OPERATIONS.md">Operations runbook</a><a href="https://lovable.dev/projects/eba70e78-93f1-43a5-ac32-f6f6facae256" target="_blank" rel="noreferrer">Lovable project ↗</a></div>
+  </footer>
+
+  <script type="module" src="src/operator.js"></script>
+</body>
+</html>
