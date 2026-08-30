@@ -1,16 +1,18 @@
 {
   "name": "forkwise-open-source-reviewer",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "private": true,
   "type": "module",
   "description": "Evidence-first open-source adoption due diligence from a public GitHub repository URL.",
   "scripts": {
     "dev": "node scripts/serve.mjs",
     "serve": "node scripts/serve.mjs",
+    "api": "node server/index.js",
     "check:syntax": "node scripts/check.mjs",
     "check:static": "node scripts/validate-static.mjs",
     "check": "npm run check:syntax && npm run check:static",
     "test": "node --test",
+    "test:backend": "node --test tests/backend.test.js",
     "build": "node scripts/build.mjs",
     "validate": "npm run check && npm test && npm run build"
   },
