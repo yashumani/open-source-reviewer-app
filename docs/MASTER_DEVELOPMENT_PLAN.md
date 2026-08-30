@@ -2,7 +2,7 @@
 
 > **Purpose:** execution evidence for building, validating, deploying, and maturing ForkWise. This is not the product-requirements document.
 >
-> **Plan version:** 1.1  
+> **Plan version:** 1.2  
 > **Working branch during bootstrap:** `main`  
 > **Last updated:** 2026-08-30
 
@@ -13,109 +13,129 @@
 - ✅ Complete with repository evidence
 - 🔴 Blocked
 
-A step is complete only when implementation, validation, and documentation evidence exist in the repository. Local attempts alone do not count.
+A checkpoint is complete only when implementation, validation, and documentation evidence exist in the repository. Local attempts alone do not count.
 
 ## Master execution board
 
-| # | Development checkpoint | Status | Repository evidence | Validation/exit evidence |
-| ---: | --- | :---: | --- | --- |
-| 01 | Repository development governance | ✅ | `README.md`, `docs/REQUIREMENTS.md`, `docs/DEVELOPMENT_PLAN.md` | Project intent, delivered work, and next target are distinguishable. |
-| 02 | Master execution plan | ✅ | This document | 24 auditable checkpoints with evidence and gates. |
-| 03 | Runnable application skeleton | ✅ | `index.html`, `src/app.js`, `package.json`, `scripts/serve.mjs` | Static application and local server; production bundle generated. |
-| 04 | Responsive design system | ✅ | `styles.css`, `assets/mark.svg` | Chromium at 1440, 768, 390, 320 px; 0 horizontal overflow. |
-| 05 | Repository intake workflow | ✅ | Form in `index.html`, orchestration in `src/app.js` | URL, intent, use case, deployment, sensitivity, team, external-service policy. |
-| 06 | GitHub URL normalization/validation | ✅ | `src/github.js` | URL acceptance/rejection tests, unsupported-host error UI. |
-| 07 | Read-only GitHub retrieval | ✅ | `src/github.js` | Commit/tree pinning, optional release handling, rate-limit/not-found tests. |
-| 08 | Analysis progress UX | ✅ | `index.html`, `src/app.js`, `styles.css` | Seven visible pending/running/complete stages. |
-| 09 | Artifact inventory | ✅ | `src/inventory.js` | Artifact-classification and bounded-selection tests. |
-| 10 | Language/framework detection | ✅ | `src/analyzer.js` | Evidence-derived runtime/framework/data/deployment technology signals. |
-| 11 | Evidence/finding schemas | ✅ | `src/schema.js` | Unique IDs, valid dimensions/severities, evidence-reference validation tests. |
-| 12 | Documentation/license analyzer | ✅ | `src/analyzer.js` | README, supporting docs, license metadata/file, contributor/security governance. |
-| 13 | Testing/CI analyzer | ✅ | `src/analyzer.js` | Test paths, workflow commands, explicit unknown coverage; no fabricated percentage. |
-| 14 | Deployment/operations analyzer | ✅ | `src/analyzer.js` | Containers, Kubernetes, environment, databases, variables, ports, migrations, backup. |
-| 15 | External-service/telemetry analyzer | ✅ | `src/analyzer.js` | Supported static indicators with explicit runtime uncertainty and policy conflicts. |
-| 16 | Security-posture analyzer | ✅ | `src/analyzer.js`, `src/schema.js`, `docs/SECURITY_MODEL.md` | Security policy, dependency automation, workflows, tracked `.env`, secret redaction. |
-| 17 | README Reality Check | ✅ | `src/analyzer.js` | Six claim families and five claim states; sample contradiction/verification tests. |
-| 18 | Fit/Trust/Run/Own/Exit dimensions | ✅ | `src/analyzer.js`, report dashboard | Five scored/status dimensions with contextual findings. |
-| 19 | Contextual decision engine | ✅ | `src/analyzer.js` | Adopt/Pilot/Fork/Avoid/Insufficient boundaries and context-change tests. |
-| 20 | Executive review dashboard | ✅ | `index.html`, `styles.css`, `src/app.js` | Decision, confidence, coverage, blockers, burden, effort, next action in first view. |
-| 21 | Evidence explorer/detailed report | ✅ | `src/app.js` | Finding search/filter, claims, operations, evidence links, mobile containment. |
-| 22 | Report export and pilot checklist | ✅ | `src/export.js`, `src/app.js` | JSON/Markdown provenance tests, browser download check, copyable checklist. |
-| 23 | Full quality/security validation | ✅ | `tests/`, `scripts/check.mjs`, `scripts/validate-static.mjs`, `scripts/ui_validation.py` | 49/49 tests, build, 4 Chromium viewports, no console errors. |
-| 24 | Deploy, live-validate, and establish next architecture | 🟡 | `.github/workflows/pages.yml`, `docs/BACKEND_TRANSITION.md` | Awaiting workflow execution and live GitHub Pages smoke test for the release commit. |
+| # | Development checkpoint | Status | Primary evidence / exit gate |
+| ---: | --- | :---: | --- |
+| 01 | Repository development governance | ✅ | `README.md`, requirements and development docs |
+| 02 | Master execution plan | ✅ | This document and auditable checkpoints |
+| 03 | Runnable application skeleton | ✅ | Static application + local/production build |
+| 04 | Responsive design system | ✅ | Desktop/tablet/mobile validation |
+| 05 | Repository intake workflow | ✅ | URL + intent + use-case controls |
+| 06 | GitHub URL normalization/validation | ✅ | Deterministic parser tests |
+| 07 | Read-only GitHub retrieval | ✅ | Commit/tree pinning and provider error tests |
+| 08 | Analysis progress UX | ✅ | Explicit analysis stages |
+| 09 | Artifact inventory | ✅ | Deterministic classifier tests |
+| 10 | Language/framework detection | ✅ | Evidence-derived technology signals |
+| 11 | Evidence/finding schemas | ✅ | Schema and evidence-reference validation |
+| 12 | Documentation/license analyzer | ✅ | Deterministic rules and evidence |
+| 13 | Testing/CI analyzer | ✅ | Test/CI signals; no fabricated coverage |
+| 14 | Deployment/operations analyzer | ✅ | Container/data/runtime inventory |
+| 15 | External-service/telemetry analyzer | ✅ | Static indicators with runtime uncertainty |
+| 16 | Security-posture analyzer | ✅ | Governance/workflow/secret-redaction rules |
+| 17 | README Reality Check | ✅ | Claim ledger and claim-state tests |
+| 18 | Fit/Trust/Run/Own/Exit dimensions | ✅ | Contextual dimension model |
+| 19 | Contextual decision engine | ✅ | Adopt/Pilot/Fork/Avoid/Insufficient Evidence tests |
+| 20 | Executive review dashboard | ✅ | Decision-first responsive report |
+| 21 | Evidence explorer/detailed report | ✅ | Search/filter/evidence links |
+| 22 | Report export and pilot checklist | ✅ | JSON/Markdown provenance tests |
+| 23 | Full quality/security validation | ✅ | Automated CI + responsive validation |
+| 24 | Deploy and live-validate browser preview | ✅ | Pages deployment succeeded for commit `440654e068a827e7ca3e3bab23b7b9b7b98e732b`; live URL `https://yashumani.github.io/open-source-reviewer-app/` |
+| 25 | Runner architecture | ✅ | `server/README.md`, worker-thread boundary, static-only execution model |
+| 26 | Analysis API | ✅ | `server/api.js`; health, create-review, job-status and report endpoints |
+| 27 | Job queue | ✅ | `server/job-queue.js`; bounded concurrency, progress, sanitized failures |
+| 28 | Static-analysis worker | ✅ | `server/analysis-runner.js`, `server/worker-entry.js`; hard timeout and reuse of existing deterministic analyzer |
+| 29 | Report/job persistence | ✅ | `server/job-store.js`; atomic file-backed persistence plus test memory store |
+| 30 | Web-to-runner integration | 🟡 | `src/runner-client.js` and client tests complete; activation awaits a public backend API host, while Pages continues using the browser analyzer |
 
-## Phase evidence
+## Current backend cycle — Steps 25–30
 
-### Phase A — Foundation and visible baseline (Steps 01–04)
+### Architecture delivered
 
-**Delivered:** repository governance, visible work-in-progress status, runnable shell, design system, responsive layout, accessibility basics, and production build scripts.
+```text
+GitHub Pages web client
+        │
+        │ current public preview: browser analysis
+        │ future production mode: runner client
+        ▼
+Analysis API
+        │ POST /v1/reviews
+        │ GET /v1/jobs/:id
+        │ GET /v1/reports/:id
+        ▼
+Bounded in-process queue
+        ▼
+Node worker thread
+        │
+        ├── parse public GitHub URL
+        ├── pin default-branch commit
+        ├── retrieve bounded static evidence
+        ├── run deterministic analyzer
+        └── return forkwise report contract
+        ▼
+Atomic file-backed job/report persistence
+```
 
-**Exit evidence:** `npm run validate`; responsive metrics and screenshot paths in `docs/validation/ui-validation.json` (captures are reproducible and intentionally git-ignored).
+### Security boundary
 
-### Phase B — Repository intake and analysis foundation (Steps 05–10)
+- Repository-controlled install scripts, tests, containers, Makefiles, shell scripts, and application code are not executed.
+- The worker thread is a concurrency/fault boundary, not a hostile-code sandbox.
+- Unexpected runner failures are converted to sanitized public errors.
+- Request bodies and context fields are bounded.
+- Worker runtime is time bounded.
+- Production dynamic build/test execution remains a separate future sandbox service requiring stronger container/VM isolation and explicit authorization.
 
-**Delivered:** contextual intake, strict public GitHub URL parser, exact default-branch commit, recursive tree, bounded high-value text retrieval, progress states, artifact classifier, and technology signals.
+### Backend-cycle validation gate
 
-**Safety boundary:** retrieval is read-only. No install/build/test/container command from the reviewed repository is executed.
+The cycle is accepted when:
 
-### Phase C — Deterministic evidence engine (Steps 11–16)
+1. Existing browser tests still pass.
+2. Backend queue/API tests pass.
+3. Browser runner-client tests pass.
+4. Syntax/static checks include the new JavaScript modules.
+5. Production Pages build remains successful.
+6. Quality Actions succeeds on the final cycle commit.
+7. Pages Actions succeeds and the live preview remains reachable.
 
-**Delivered:** normalized schema, evidence IDs, docs/license/test/CI/operations/external-service/security analyzers, redaction, and coverage/confidence limits.
+## What remains before production-service go-live
 
-**Exit evidence:** deterministic tests for redaction, truncated trees, no fabricated coverage, policy conflicts, and evidence-reference integrity.
+The browser preview is already public. A full production service requires these additional gates rather than a calendar-date promise:
 
-### Phase D — Product differentiation and decision engine (Steps 17–22)
+### Step 31 — Select and provision backend hosting — ⬜
+A public HTTPS target must run `server/index.js` (or an evolved containerized equivalent) with controlled cost, secrets, logs, health checks, and rollback.
 
-**Delivered:** README Reality Check, five adoption dimensions, contextual decision precedence, executive dashboard, evidence explorer, exports, and pilot checklist.
+### Step 32 — Durable production datastore — ⬜
+Replace local file persistence with a production database/object-store strategy supporting idempotency, retention, deletion, and audit provenance.
 
-**Exit evidence:** embedded sample produces Pilot with 100% supported evidence coverage, 18 findings, 21 evidence records, five dimensions, and six claims.
+### Step 33 — Authentication, quotas and abuse controls — ⬜
+Add user/session identity, per-user and per-repository limits, request throttling, job quotas, and provider credentials without exposing GitHub tokens to the browser.
 
-### Phase E — Quality, deployment, and production architecture (Steps 23–24)
+### Step 34 — Strong worker isolation — ⬜
+Run analysis workers in ephemeral containers/VMs with CPU, memory, file-count, archive-size, network and timeout limits. Continue static-only execution by default.
 
-**Delivered:** dependency-free validation workflow, Pages workflow, manual Chromium harness, compressed screenshots, validation report, and safe backend transition plan.
+### Step 35 — Activate runner mode in the live UI — ⬜
+Configure the Pages client with the public API base URL, switch production analysis from browser mode to asynchronous jobs, preserve browser fallback only for controlled failure/recovery cases, and validate desktop/mobile progress/error states.
 
-**Remaining external evidence:** a successful GitHub Actions run, Pages deployment URL, and live desktop/mobile smoke test tied to the resulting commit SHA.
+### Step 36 — Production observability and operations — ⬜
+Add structured logs, metrics, job latency/failure dashboards, alerting, backup/restore, runbooks, and deployment rollback evidence.
 
-## Evidence package for every future cycle
+### Step 37 — Security/privacy/legal readiness review — ⬜
+Review data retention, repository-content handling, secret redaction, terms/privacy disclosures, dependency/license posture, vulnerability response, and threat model before production approval.
+
+### Step 38 — Production release gate — ⬜
+Load/smoke testing, end-to-end adoption review against representative repositories, deployment rollback drill, final accessibility/responsive checks, and explicit go/no-go evidence.
+
+## Evidence package required for every future cycle
 
 1. Commit SHA.
 2. Files changed.
 3. Automated test command and passed/failed count.
 4. Syntax/static/build result.
-5. Desktop UI evidence when applicable.
-6. Mobile UI evidence when applicable.
-7. Loading/empty/error-state evidence.
-8. Security-boundary result.
-9. Deployment workflow and URL when applicable.
-10. Known limitations.
-11. Updated step status.
-12. Exact next checkpoint.
-
-## Release gates
-
-### Browser preview gate
-
-- Steps 03–23 complete.
-- No arbitrary repository execution.
-- Commit-pinned provenance.
-- Zero failed automated tests.
-- No horizontal overflow at required viewports.
-- Invalid URL and provider failure states are recoverable.
-- Static limitations visible in the report.
-
-**Current result:** passed locally.
-
-### Live preview gate
-
-- Quality workflow succeeds on `main`.
-- Pages build/deploy succeeds.
-- Live URL returns the application.
-- Embedded sample produces the expected Pilot report live.
-- Desktop and mobile live smoke checks pass.
-- Deployment commit SHA and URL are recorded in `docs/VALIDATION_REPORT.md` and `docs/DEVELOPMENT_PLAN.md`.
-
-**Current result:** awaiting release-commit workflow execution.
-
-### Production-service gate (future)
-
-The Pages preview is not the production analysis architecture. Production requires isolated static-analysis workers, resource limits, authenticated provider access, versioned/persisted reports, operational monitoring, privacy/legal review, and a separate authorization/threat model for any future runtime execution.
+5. Desktop/mobile evidence when applicable.
+6. Loading/empty/error-state evidence.
+7. Security-boundary result.
+8. Deployment workflow and URL when applicable.
+9. Known limitations.
+10. Updated checkpoint status and exact next checkpoint.
