@@ -1,0 +1,78 @@
+name: Container Contract
+
+on:
+  pull_request:
+    paths:
+      - "Dockerfile"
+      - ".dockerignore"
+      - "compose.yaml"
+      - "server/**"
+      - "src/**"
+      - "scripts/contract-runner-server.mjs"
+      - "scripts/smoke-runner.mjs"
+      - ".github/workflows/container-contract.yml"
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  non-root-static-runner:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 24
+      - name: Build runner image
+        run: docker build --pull --tag forkwise-runner:contract .
+      - name: Start hardened deterministic contract container
+        run: |
+          docker run --detach \
+            --name forkwise-contract \
+            --publish 127.0.0.1:8787:8787 \
+            --env HOST=0.0.0.0 \
+            --env PORT=8787 \
+            --env FORKWISE_ANALYZER_VERSION=forkwise-contract/0.1.0 \
+            --read-only \
+            --tmpfs /tmp:rw,noexec,nosuid,size=16m \
+            --tmpfs /data:rw,noexec,nosuid,size=32m \
+            --cap-drop ALL \
+            --security-opt no-new-privileges \
+            --pids-limit 128 \
+            --memory 512m \
+            --cpus 1 \
+            forkwise-runner:contract \
+            node scripts/contract-runner-server.mjs
+          for attempt in $(seq 1 45); do
+            if curl --silent --fail http://127.0.0.1:8787/functions/v1/review-api/health >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          docker logs forkwise-contract
+          exit 1
+      - name: Assert runtime hardening
+        run: |
+          test "$(docker inspect --format '{{.Config.User}}' forkwise-contract)" = "node"
+          test "$(docker inspect --format '{{.HostConfig.ReadonlyRootfs}}' forkwise-contract)" = "true"
+          docker inspect --format '{{json .HostConfig.CapDrop}}' forkwise-contract | grep -q 'ALL'
+          docker inspect --format '{{json .HostConfig.SecurityOpt}}' forkwise-contract | grep -q 'no-new-privileges'
+      - name: Validate lifecycle through container boundary
+        env:
+          FORKWISE_RUNNER_BASE: http://127.0.0.1:8787/functions/v1/review-api
+          FORKWISE_SMOKE_MODE: lifecycle
+          FORKWISE_EXPECT_ANALYZER_VERSION: forkwise-contract/0.1.0
+          FORKWISE_SMOKE_TIMEOUT_MS: "30000"
+        run: node scripts/smoke-runner.mjs
+      - name: Print container logs on failure
+        if: failure()
+        run: docker logs forkwise-contract || true
+      - name: Remove container
+        if: always()
+        run: docker rm --force forkwise-contract 2>/dev/null || true

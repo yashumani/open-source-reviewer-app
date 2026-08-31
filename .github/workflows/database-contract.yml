@@ -1,0 +1,44 @@
+name: Database Contract
+
+on:
+  pull_request:
+    paths:
+      - "supabase/migrations/**"
+      - "scripts/test-postgres-contract.sh"
+      - ".github/workflows/database-contract.yml"
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  postgres-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: forkwise
+          POSTGRES_PASSWORD: forkwise-test
+          POSTGRES_DB: forkwise
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U forkwise -d forkwise"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - name: Install PostgreSQL client
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --no-install-recommends postgresql-client
+      - name: Validate schema and lease lifecycle
+        env:
+          DATABASE_URL: postgresql://forkwise:forkwise-test@127.0.0.1:5432/forkwise
+        run: bash scripts/test-postgres-contract.sh
