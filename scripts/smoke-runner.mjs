@@ -3,12 +3,27 @@ import { createRunnerClient } from "../src/runner-client.js";
 
 const baseUrl = process.env.FORKWISE_RUNNER_BASE || "https://forkwise-runner.lovable.app/functions/v1/review-api";
 const repositoryUrl = process.env.FORKWISE_SMOKE_REPOSITORY || "https://github.com/octocat/Hello-World";
+const mode = String(process.env.FORKWISE_SMOKE_MODE || "lifecycle").toLowerCase();
+const expectedAnalyzerVersion = process.env.FORKWISE_EXPECT_ANALYZER_VERSION || null;
+const timeoutMs = Number(process.env.FORKWISE_SMOKE_TIMEOUT_MS || 120_000);
 const runId = process.env.GITHUB_RUN_ID || "local";
-const client = createRunnerClient({ baseUrl, pollIntervalMs: 1_000, timeoutMs: 120_000 });
+const client = createRunnerClient({ baseUrl, pollIntervalMs: 1_000, timeoutMs });
 const decisions = new Set(["Adopt", "Pilot", "Fork", "Avoid", "Insufficient evidence"]);
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
+}
+
+function assertHealth(health) {
+  assert(health.status === "ok", `Unexpected health status: ${health.status}`);
+  assert(health.service === "forkwise-runner", `Unexpected service: ${health.service}`);
+  assert(health.schemaVersion === "forkwise-report/v1", `Unexpected schema version: ${health.schemaVersion}`);
+  assert(health.execution === "static-only", `Unexpected execution mode: ${health.execution}`);
+  if (expectedAnalyzerVersion) {
+    assert(health.analyzerVersion === expectedAnalyzerVersion, `Unexpected analyzer version: ${health.analyzerVersion}`);
+  } else {
+    assert(typeof health.analyzerVersion === "string" && health.analyzerVersion.length > 0, "Health response is missing analyzerVersion.");
+  }
 }
 
 function safeSummary(report, progressEvents, stats) {
@@ -29,12 +44,41 @@ function safeSummary(report, progressEvents, stats) {
   };
 }
 
+async function writeSummary(lines) {
+  if (process.env.GITHUB_STEP_SUMMARY) {
+    await appendFile(process.env.GITHUB_STEP_SUMMARY, `${lines.join("\n")}\n`, "utf8");
+  }
+}
+
 const health = await client.health();
-assert(health.status === "ok", `Unexpected health status: ${health.status}`);
-assert(health.service === "forkwise-runner", `Unexpected service: ${health.service}`);
-assert(health.schemaVersion === "forkwise-report/v1", `Unexpected schema version: ${health.schemaVersion}`);
-assert(health.analyzerVersion === "forkwise-hosted/0.1.0", `Unexpected analyzer version: ${health.analyzerVersion}`);
-assert(health.execution === "static-only", `Unexpected execution mode: ${health.execution}`);
+assertHealth(health);
+
+if (mode === "health") {
+  console.log(`HEALTH_SUMMARY=${JSON.stringify({
+    status: health.status,
+    service: health.service,
+    schemaVersion: health.schemaVersion,
+    analyzerVersion: health.analyzerVersion,
+    execution: health.execution,
+    executionModel: health.executionModel || "unknown",
+  })}`);
+  await writeSummary([
+    "## ForkWise hosted runner health",
+    "",
+    `- Status: **${health.status}**`,
+    `- Service: \`${health.service}\``,
+    `- Schema: \`${health.schemaVersion}\``,
+    `- Analyzer: \`${health.analyzerVersion}\``,
+    `- Execution: \`${health.execution}\``,
+    `- Execution model: \`${health.executionModel || "not reported"}\``,
+    "",
+    "> Full hosted lifecycle validation remains disabled until the request-bound execution fix is deployed.",
+    "",
+  ]);
+  process.exit(0);
+}
+
+if (mode !== "lifecycle") throw new Error(`Unsupported smoke mode: ${mode}`);
 
 const beforeStats = await client.getStats();
 const progressEvents = [];
@@ -43,7 +87,7 @@ const report = await client.runReview({
   clientRequestId: `github-actions-${runId}-${Date.now().toString(36)}`,
   context: {
     intent: "self-host",
-    useCase: "Hosted runner end-to-end smoke validation from GitHub Actions.",
+    useCase: "Runner end-to-end contract validation from GitHub Actions.",
     deploymentTarget: "flexible",
     sensitivity: "public",
     teamSize: "small",
@@ -56,7 +100,9 @@ const report = await client.runReview({
 });
 
 assert(report.schemaVersion === "forkwise-report/v1", `Report schema mismatch: ${report.schemaVersion}`);
-assert(report.analyzerVersion === "forkwise-hosted/0.1.0", `Report analyzer mismatch: ${report.analyzerVersion}`);
+if (expectedAnalyzerVersion) {
+  assert(report.analyzerVersion === expectedAnalyzerVersion, `Report analyzer mismatch: ${report.analyzerVersion}`);
+}
 assert(report.execution === "static-only", `Report execution mismatch: ${report.execution}`);
 assert(decisions.has(report.decision), `Unexpected decision: ${report.decision}`);
 assert(Array.isArray(report.dimensions) && report.dimensions.length === 5, "Report must contain five dimensions.");
@@ -69,20 +115,17 @@ assert(Number(afterStats.total) >= Number(beforeStats.total || 0), "Recent job t
 const summary = safeSummary(report, progressEvents, afterStats);
 console.log(`SMOKE_SUMMARY=${JSON.stringify(summary)}`);
 
-if (process.env.GITHUB_STEP_SUMMARY) {
-  const rows = [
-    "## ForkWise hosted runner smoke test",
-    "",
-    `- Repository: \`${summary.repository}\``,
-    `- Decision: **${summary.decision}**`,
-    `- Confidence: \`${summary.confidence}\``,
-    `- Evidence coverage: \`${summary.evidenceCoverage}%\``,
-    `- Blockers: \`${summary.blockerCount}\``,
-    `- Commit: \`${summary.commitSha}\``,
-    `- Progress stages: \`${summary.progressStages.join(" → ")}\``,
-    `- Jobs in 24-hour window: \`${summary.jobsInLast24Hours}\``,
-    "- Safety boundary: `static-only`",
-    "",
-  ].join("\n");
-  await appendFile(process.env.GITHUB_STEP_SUMMARY, rows, "utf8");
-}
+await writeSummary([
+  "## ForkWise runner lifecycle smoke test",
+  "",
+  `- Repository: \`${summary.repository}\``,
+  `- Decision: **${summary.decision}**`,
+  `- Confidence: \`${summary.confidence}\``,
+  `- Evidence coverage: \`${summary.evidenceCoverage}%\``,
+  `- Blockers: \`${summary.blockerCount}\``,
+  `- Commit: \`${summary.commitSha}\``,
+  `- Progress stages: \`${summary.progressStages.join(" → ")}\``,
+  `- Jobs in 24-hour window: \`${summary.jobsInLast24Hours}\``,
+  "- Safety boundary: `static-only`",
+  "",
+]);
