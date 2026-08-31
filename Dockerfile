@@ -1,4 +1,4 @@
-FROM node:24-alpine
+FROM node:26-alpine
 
 LABEL org.opencontainers.image.title="ForkWise Static Analysis Runner" \
       org.opencontainers.image.description="Static-only, evidence-first public GitHub repository reviewer" \
