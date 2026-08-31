@@ -1,0 +1,13 @@
+.git
+.github
+.runtime
+artifacts
+dist
+node_modules
+validation
+*.log
+*.zip
+.env
+.env.*
+docs/screenshots
+docs/validation

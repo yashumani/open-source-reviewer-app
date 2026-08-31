@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://yashumani.github.io/open-source-reviewer-app/docs/api/job-status-v1.schema.json",
+  "title": "ForkWise Analysis Job Status",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["jobId", "status", "progress", "createdAt", "updatedAt", "statusUrl", "reportUrl"],
+  "properties": {
+    "jobId": { "type": "string", "format": "uuid" },
+    "status": { "type": "string", "enum": ["queued", "running", "completed", "failed"] },
+    "repositoryUrl": { "type": ["string", "null"], "format": "uri" },
+    "attemptCount": { "type": "integer", "minimum": 0 },
+    "progress": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["stage", "message"],
+      "properties": {
+        "stage": { "type": "string", "minLength": 1 },
+        "message": { "type": "string", "minLength": 1 },
+        "percent": { "type": ["number", "null"], "minimum": 0, "maximum": 100 },
+        "detail": {}
+      }
+    },
+    "error": {
+      "anyOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["code", "message", "retryable"],
+          "properties": {
+            "code": { "type": "string" },
+            "message": { "type": "string" },
+            "retryable": { "type": "boolean" }
+          }
+        }
+      ]
+    },
+    "createdAt": { "type": "string", "format": "date-time" },
+    "updatedAt": { "type": "string", "format": "date-time" },
+    "startedAt": { "type": ["string", "null"], "format": "date-time" },
+    "completedAt": { "type": ["string", "null"], "format": "date-time" },
+    "reportId": { "type": ["string", "null"], "format": "uuid" },
+    "statusUrl": { "type": "string" },
+    "reportUrl": { "type": "string" }
+  }
+}

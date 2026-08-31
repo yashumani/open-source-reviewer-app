@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://yashumani.github.io/open-source-reviewer-app/docs/api/review-request-v1.schema.json",
+  "title": "ForkWise Review Request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["repositoryUrl", "context"],
+  "properties": {
+    "repositoryUrl": {
+      "type": "string",
+      "format": "uri",
+      "maxLength": 300,
+      "pattern": "^https?://(www\\.)?github\\.com/[^/]+/[^/]+"
+    },
+    "clientRequestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120,
+      "pattern": "^[A-Za-z0-9._:-]+$"
+    },
+    "context": {
+      "$ref": "#/$defs/reviewContext"
+    }
+  },
+  "$defs": {
+    "reviewContext": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "intent",
+        "useCase",
+        "deploymentTarget",
+        "sensitivity",
+        "teamSize",
+        "externalServices"
+      ],
+      "properties": {
+        "intent": {
+          "type": "string",
+          "enum": ["self-host", "dependency", "fork", "contribute"]
+        },
+        "useCase": {
+          "type": "string",
+          "maxLength": 1000
+        },
+        "deploymentTarget": {
+          "type": "string",
+          "enum": ["flexible", "docker", "kubernetes", "managed", "local"]
+        },
+        "sensitivity": {
+          "type": "string",
+          "enum": ["public", "internal", "confidential", "regulated"]
+        },
+        "teamSize": {
+          "type": "string",
+          "enum": ["small", "medium", "large"]
+        },
+        "externalServices": {
+          "type": "string",
+          "enum": ["allowed", "disclosed", "prohibited"]
+        }
+      }
+    }
+  }
+}

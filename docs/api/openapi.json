@@ -1,0 +1,215 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "ForkWise Static Repository Review API",
+    "version": "1.0.0-beta",
+    "description": "Evidence-first, static-only analysis of public GitHub repositories. Repository-controlled code is never executed."
+  },
+  "servers": [
+    {
+      "url": "https://forkwise-runner.lovable.app/functions/v1/review-api",
+      "description": "Published beta API shell; full job execution remains gated until the lease deployment is complete."
+    },
+    {
+      "url": "http://127.0.0.1:8787/functions/v1/review-api",
+      "description": "Local request-bound reference service"
+    }
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "operationId": "getHealth",
+        "summary": "Read the service and safety contract",
+        "responses": {
+          "200": {
+            "description": "Service contract",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/$defs/Health" }
+              }
+            }
+          }
+        }
+      },
+      "options": { "$ref": "#/$defs/OptionsOperation" }
+    },
+    "/v1/stats": {
+      "get": {
+        "operationId": "getStats",
+        "summary": "Read aggregate job counts without repository content",
+        "responses": {
+          "200": {
+            "description": "Aggregate statistics",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/$defs/Stats" }
+              }
+            }
+          }
+        }
+      },
+      "options": { "$ref": "#/$defs/OptionsOperation" }
+    },
+    "/v1/reviews": {
+      "post": {
+        "operationId": "createReview",
+        "summary": "Validate and enqueue a static review",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "review-request-v1.schema.json" }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Review job accepted",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/$defs/JobAccepted" }
+              }
+            }
+          },
+          "400": { "$ref": "#/$defs/ErrorResponse" },
+          "403": { "$ref": "#/$defs/ErrorResponse" },
+          "413": { "$ref": "#/$defs/ErrorResponse" },
+          "422": { "$ref": "#/$defs/ErrorResponse" },
+          "429": { "$ref": "#/$defs/ErrorResponse" },
+          "503": { "$ref": "#/$defs/ErrorResponse" }
+        }
+      },
+      "options": { "$ref": "#/$defs/OptionsOperation" }
+    },
+    "/v1/jobs/{jobId}": {
+      "parameters": [
+        {
+          "name": "jobId",
+          "in": "path",
+          "required": true,
+          "schema": { "type": "string", "format": "uuid" }
+        }
+      ],
+      "get": {
+        "operationId": "getReviewJob",
+        "summary": "Read progress and, in the beta bridge, execute a claimable job within the request",
+        "responses": {
+          "200": {
+            "description": "Current or terminal job state",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "job-status-v1.schema.json" }
+              }
+            }
+          },
+          "400": { "$ref": "#/$defs/ErrorResponse" },
+          "404": { "$ref": "#/$defs/ErrorResponse" }
+        }
+      },
+      "options": { "$ref": "#/$defs/OptionsOperation" }
+    },
+    "/v1/reports/{reportId}": {
+      "parameters": [
+        {
+          "name": "reportId",
+          "in": "path",
+          "required": true,
+          "schema": { "type": "string", "format": "uuid" }
+        }
+      ],
+      "get": {
+        "operationId": "getReviewReport",
+        "summary": "Retrieve a completed commit-pinned report",
+        "responses": {
+          "200": {
+            "description": "Completed ForkWise report",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "forkwise-report-v1.schema.json" }
+              }
+            }
+          },
+          "400": { "$ref": "#/$defs/ErrorResponse" },
+          "404": { "$ref": "#/$defs/ErrorResponse" },
+          "409": { "$ref": "#/$defs/ErrorResponse" }
+        }
+      },
+      "options": { "$ref": "#/$defs/OptionsOperation" }
+    }
+  },
+  "$defs": {
+    "Health": {
+      "type": "object",
+      "required": ["status", "service", "schemaVersion", "analyzerVersion", "execution"],
+      "properties": {
+        "status": { "const": "ok" },
+        "service": { "const": "forkwise-runner" },
+        "schemaVersion": { "const": "forkwise-report/v1" },
+        "analyzerVersion": { "type": "string", "minLength": 1 },
+        "execution": { "const": "static-only" },
+        "executionModel": { "type": "string" },
+        "time": { "type": "string", "format": "date-time" }
+      }
+    },
+    "Stats": {
+      "type": "object",
+      "required": ["windowHours", "total", "counts"],
+      "properties": {
+        "windowHours": { "type": "number", "minimum": 0 },
+        "total": { "type": "integer", "minimum": 0 },
+        "counts": {
+          "type": "object",
+          "required": ["queued", "running", "completed", "failed"],
+          "properties": {
+            "queued": { "type": "integer", "minimum": 0 },
+            "running": { "type": "integer", "minimum": 0 },
+            "completed": { "type": "integer", "minimum": 0 },
+            "failed": { "type": "integer", "minimum": 0 }
+          }
+        }
+      }
+    },
+    "JobAccepted": {
+      "type": "object",
+      "required": ["jobId", "status", "statusUrl", "reportUrl"],
+      "properties": {
+        "jobId": { "type": "string", "format": "uuid" },
+        "status": { "type": "string", "enum": ["queued", "running", "completed", "failed"] },
+        "idempotent": { "type": "boolean" },
+        "statusUrl": { "type": "string" },
+        "reportUrl": { "type": "string" }
+      }
+    },
+    "ApiError": {
+      "type": "object",
+      "required": ["code", "message"],
+      "properties": {
+        "code": { "type": "string" },
+        "message": { "type": "string" },
+        "details": {},
+        "retryAfterSeconds": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "ErrorResponse": {
+      "description": "Sanitized public error",
+      "content": {
+        "application/json": {
+          "schema": {
+            "type": "object",
+            "required": ["error"],
+            "properties": {
+              "error": { "$ref": "#/$defs/ApiError" }
+            }
+          }
+        }
+      }
+    },
+    "OptionsOperation": {
+      "summary": "CORS preflight",
+      "responses": {
+        "204": { "description": "Allowed preflight" },
+        "403": { "$ref": "#/$defs/ErrorResponse" }
+      }
+    }
+  }
+}

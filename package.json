@@ -1,9 +1,9 @@
 {
   "name": "forkwise-open-source-reviewer",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "private": true,
   "type": "module",
-  "description": "Evidence-first open-source adoption due diligence with a hosted static-analysis runner and operator console.",
+  "description": "Evidence-first open-source adoption due diligence with a hosted static-analysis runner, formal contracts, and credit-free deployment readiness.",
   "scripts": {
     "dev": "node scripts/serve.mjs",
     "serve": "node scripts/serve.mjs",
@@ -11,14 +11,17 @@
     "api:contract": "node scripts/contract-runner-server.mjs",
     "check:syntax": "node scripts/check.mjs",
     "check:static": "node scripts/validate-static.mjs",
-    "check": "npm run check:syntax && npm run check:static",
+    "check": "npm run check:syntax && npm run check:static && npm run check:contracts",
     "test": "node --test",
     "test:backend": "node --test tests/backend.test.js tests/request-bound-runner.test.js",
     "test:runner": "node --test tests/runner-client.test.js tests/operator-model.test.js tests/request-bound-runner.test.js",
     "smoke:runner:health": "FORKWISE_SMOKE_MODE=health node scripts/smoke-runner.mjs",
     "smoke:runner:lifecycle": "node scripts/smoke-runner.mjs",
     "build": "node scripts/build.mjs",
-    "validate": "npm run check && npm test && npm run build"
+    "validate": "npm run check && npm test && npm run build",
+    "check:contracts": "node scripts/validate-api-contract.mjs && node scripts/validate-workflows.mjs",
+    "test:postgres": "bash scripts/test-postgres-contract.sh",
+    "test:hosted-adapter": "node --test tests/hosted-report-adapter.test.js tests/api-contract.test.js"
   },
   "engines": {
     "node": ">=22"
