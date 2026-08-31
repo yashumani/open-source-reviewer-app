@@ -2,18 +2,18 @@
 
 > **Purpose:** execution evidence for building, validating, deploying, and maturing ForkWise. This is not the product-requirements document.
 >
-> **Plan version:** 1.2  
-> **Working branch during bootstrap:** `main`  
-> **Last updated:** 2026-08-30
+> **Plan version:** 1.3  
+> **Working branch:** feature branch → pull request → validated merge to `main`  
+> **Last updated:** 2026-08-31
 
 ## Status legend
 
 - ⬜ Not started
-- 🟡 In progress / awaiting external evidence
-- ✅ Complete with repository evidence
-- 🔴 Blocked
+- 🟡 In progress / partially complete
+- ✅ Complete with repository or deployment evidence
+- 🔴 Blocked by a known release dependency
 
-A checkpoint is complete only when implementation, validation, and documentation evidence exist in the repository. Local attempts alone do not count.
+A checkpoint is complete only when implementation, validation, and documentation evidence exist. Local attempts alone do not count.
 
 ## Master execution board
 
@@ -42,90 +42,121 @@ A checkpoint is complete only when implementation, validation, and documentation
 | 21 | Evidence explorer/detailed report | ✅ | Search/filter/evidence links |
 | 22 | Report export and pilot checklist | ✅ | JSON/Markdown provenance tests |
 | 23 | Full quality/security validation | ✅ | Automated CI + responsive validation |
-| 24 | Deploy and live-validate browser preview | ✅ | Pages deployment succeeded for commit `440654e068a827e7ca3e3bab23b7b9b7b98e732b`; live URL `https://yashumani.github.io/open-source-reviewer-app/` |
-| 25 | Runner architecture | ✅ | `server/README.md`, worker-thread boundary, static-only execution model |
-| 26 | Analysis API | ✅ | `server/api.js`; health, create-review, job-status and report endpoints |
-| 27 | Job queue | ✅ | `server/job-queue.js`; bounded concurrency, progress, sanitized failures |
-| 28 | Static-analysis worker | ✅ | `server/analysis-runner.js`, `server/worker-entry.js`; hard timeout and reuse of existing deterministic analyzer |
-| 29 | Report/job persistence | ✅ | `server/job-store.js`; atomic file-backed persistence plus test memory store |
-| 30 | Web-to-runner integration | 🟡 | `src/runner-client.js` and client tests complete; activation awaits a public backend API host, while Pages continues using the browser analyzer |
+| 24 | Deploy and live-validate browser preview | ✅ | Live Pages reviewer at `https://yashumani.github.io/open-source-reviewer-app/` |
+| 25 | Runner architecture | ✅ | Local static-only worker and request/job model |
+| 26 | Analysis API | ✅ | Health, stats, create-review, status and report endpoints |
+| 27 | Job queue | ✅ | Bounded local queue and progress/failure handling |
+| 28 | Static-analysis worker | ✅ | Worker-thread timeout and existing analyzer reuse |
+| 29 | Report/job persistence | ✅ | Atomic local file store plus memory test store |
+| 30 | Web-to-runner integration | 🟡 | `src/runner-client.js` complete; public reviewer stays in browser mode until hosted lifecycle passes |
+| 31 | Select and provision backend hosting | ✅ | Lovable service published at `https://forkwise-runner.lovable.app` |
+| 32 | Durable production datastore baseline | ✅ | PostgreSQL `analysis_jobs` / `analysis_reports`, RLS, indexes, retention function |
+| 33 | Authentication, quotas and abuse controls | 🟡 | Anonymous rate/idempotency/capacity controls exist; authenticated identity/quotas remain |
+| 34 | Strong worker isolation | ⬜ | Future ephemeral container/VM gate; static-only request execution remains current scope |
+| 35 | Activate runner mode in live reviewer | 🔴 | Blocked until hosted job lifecycle completes and smoke is green |
+| 36 | Production observability and operations | 🟡 | Operator console, health/stats, structured logs and runbook exist; alerting/metrics/restore drill remain |
+| 37 | Security/privacy/legal readiness review | 🟡 | Security model and redaction tests exist; privacy/terms/legal approval remain |
+| 38 | Production release gate | 🔴 | Hosted lifecycle currently remains `queued`; no go-live approval |
+| 39 | Request-bound lease reference implementation | ✅ | `server/request-bound-runner.js`, extended stores, exact route-prefix API |
+| 40 | Hosted database/handler handoff package | ✅ | `supabase/migrations/20260831_request_bound_execution.sql`, `docs/HOSTED_RUNNER_HANDOFF.md` |
+| 41 | Layered runner CI gates | ✅ | Required local lifecycle + published health + opt-in hosted lifecycle workflow |
+| 42 | Deploy request-bound execution to Lovable | 🔴 | Credit-dependent migration and handler deployment |
+| 43 | Hosted lifecycle verification and UI activation | ⬜ | Enable full smoke, validate operator, switch Pages client, re-run responsive/error validation |
 
-## Current backend cycle — Steps 25–30
-
-### Architecture delivered
+## Current architecture
 
 ```text
-GitHub Pages web client
-        │
-        │ current public preview: browser analysis
-        │ future production mode: runner client
-        ▼
-Analysis API
-        │ POST /v1/reviews
-        │ GET /v1/jobs/:id
-        │ GET /v1/reports/:id
-        ▼
-Bounded in-process queue
-        ▼
-Node worker thread
-        │
-        ├── parse public GitHub URL
-        ├── pin default-branch commit
-        ├── retrieve bounded static evidence
-        ├── run deterministic analyzer
-        └── return forkwise report contract
-        ▼
-Atomic file-backed job/report persistence
+GitHub Pages reviewer
+   ├── current live mode: bounded browser static analysis
+   └── prepared future mode: src/runner-client.js
+                         │
+                         ▼
+Published Lovable API shell
+   ├── health + schema contract: live
+   ├── PostgreSQL jobs/reports: provisioned
+   └── queued-job execution: blocked in deployed handler
+                         │
+                         ▼
+Prepared request-bound beta bridge (GitHub source)
+   ├── atomic lease claim
+   ├── first claimable poll awaits analysis
+   ├── progress renews lease
+   ├── stale invocation cannot overwrite newer result
+   └── exactly one report per job
 ```
 
-### Security boundary
+## GitHub-only cycle — Steps 39–41
 
-- Repository-controlled install scripts, tests, containers, Makefiles, shell scripts, and application code are not executed.
-- The worker thread is a concurrency/fault boundary, not a hostile-code sandbox.
+This cycle intentionally uses no Lovable credits.
+
+### Delivered
+
+- `server/contracts.js`
+  - normalized context validation with safe defaults;
+  - bounded client request identifiers;
+  - deterministic context/idempotency fingerprints.
+- `server/request-bound-runner.js`
+  - poll-triggered execution;
+  - expiring lease tokens;
+  - stale-job recovery;
+  - idempotent submission;
+  - sanitized failure output.
+- `server/job-store.js`
+  - atomic in-process claim/update/complete/fail operations for memory and file stores;
+  - duplicate-report protection;
+  - idempotency lookup.
+- `server/api.js`
+  - exact `/functions/v1/review-api/*` and `/api/public/review-api/*` compatibility;
+  - request-bound status execution;
+  - strict mutation CORS;
+  - health/stats contract;
+  - validated request context.
+- `tests/request-bound-runner.test.js`
+  - first-poll completion;
+  - concurrent claim once;
+  - stale lease recovery;
+  - sanitized failures;
+  - idempotency;
+  - exact hosted route lifecycle;
+  - invalid context and disallowed origin.
+- `scripts/contract-runner-server.mjs`
+  - deterministic dependency-free lifecycle fixture.
+- `.github/workflows/runner-smoke.yml`
+  - mandatory local request-bound lifecycle;
+  - mandatory published health contract;
+  - opt-in hosted full lifecycle.
+- `supabase/migrations/20260831_request_bound_execution.sql`
+  - production lease token, expiry, attempt count, atomic claim, progress renewal, idempotent completion, sanitized failure RPCs.
+- Handoff, readiness and operations documentation.
+
+### Local evidence before repository CI
+
+- New JavaScript modules pass `node --check`.
+- `node --test tests/request-bound-runner.test.js`: 7 passed, 0 failed.
+- Deterministic local lifecycle smoke: queued job completed, one report returned, five dimensions and a 40-character commit SHA validated.
+
+The repository Quality and runner workflows provide final evidence against the complete codebase after the branch commit.
+
+## Security boundary
+
+- Repository-controlled install scripts, tests, containers, Makefiles, shell scripts, workflows, HTML, JavaScript, binaries, and application code are not executed.
+- A worker thread, request lease, and local file lock are orchestration/fault boundaries—not hostile-code sandboxes.
 - Unexpected runner failures are converted to sanitized public errors.
-- Request bodies and context fields are bounded.
-- Worker runtime is time bounded.
+- Request bodies, context fields, worker runtime, repository tree, file count, file size, total text, and report size remain bounded.
 - Production dynamic build/test execution remains a separate future sandbox service requiring stronger container/VM isolation and explicit authorization.
 
-### Backend-cycle validation gate
+## Current release blocker
 
-The cycle is accepted when:
+The deployed Lovable handler calls unawaited analysis after returning a response. Serverless request termination prevents the job from progressing beyond `queued`.
 
-1. Existing browser tests still pass.
-2. Backend queue/API tests pass.
-3. Browser runner-client tests pass.
-4. Syntax/static checks include the new JavaScript modules.
-5. Production Pages build remains successful.
-6. Quality Actions succeeds on the final cycle commit.
-7. Pages Actions succeeds and the live preview remains reachable.
+The blocker closes only when:
 
-## What remains before production-service go-live
-
-The browser preview is already public. A full production service requires these additional gates rather than a calendar-date promise:
-
-### Step 31 — Select and provision backend hosting — ⬜
-A public HTTPS target must run `server/index.js` (or an evolved containerized equivalent) with controlled cost, secrets, logs, health checks, and rollback.
-
-### Step 32 — Durable production datastore — ⬜
-Replace local file persistence with a production database/object-store strategy supporting idempotency, retention, deletion, and audit provenance.
-
-### Step 33 — Authentication, quotas and abuse controls — ⬜
-Add user/session identity, per-user and per-repository limits, request throttling, job quotas, and provider credentials without exposing GitHub tokens to the browser.
-
-### Step 34 — Strong worker isolation — ⬜
-Run analysis workers in ephemeral containers/VMs with CPU, memory, file-count, archive-size, network and timeout limits. Continue static-only execution by default.
-
-### Step 35 — Activate runner mode in the live UI — ⬜
-Configure the Pages client with the public API base URL, switch production analysis from browser mode to asynchronous jobs, preserve browser fallback only for controlled failure/recovery cases, and validate desktop/mobile progress/error states.
-
-### Step 36 — Production observability and operations — ⬜
-Add structured logs, metrics, job latency/failure dashboards, alerting, backup/restore, runbooks, and deployment rollback evidence.
-
-### Step 37 — Security/privacy/legal readiness review — ⬜
-Review data retention, repository-content handling, secret redaction, terms/privacy disclosures, dependency/license posture, vulnerability response, and threat model before production approval.
-
-### Step 38 — Production release gate — ⬜
-Load/smoke testing, end-to-end adoption review against representative repositories, deployment rollback drill, final accessibility/responsive checks, and explicit go/no-go evidence.
+1. the prepared PostgreSQL migration is applied;
+2. the status handler atomically claims and awaits a job using the returned lease token;
+3. completion/failure uses the same token;
+4. the hosted lifecycle smoke passes;
+5. the operator console observes a completed job;
+6. runner mode is activated and revalidated in the public Pages UI.
 
 ## Evidence package required for every future cycle
 

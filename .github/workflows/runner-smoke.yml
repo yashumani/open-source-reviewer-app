@@ -1,0 +1,108 @@
+name: Runner Contract and Hosted Health
+
+on:
+  pull_request:
+    paths:
+      - "server/**"
+      - "src/runner-client.js"
+      - "scripts/contract-runner-server.mjs"
+      - "scripts/smoke-runner.mjs"
+      - "tests/request-bound-runner.test.js"
+      - "supabase/migrations/**"
+      - ".github/workflows/runner-smoke.yml"
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      full_hosted_lifecycle:
+        description: "Run the complete Lovable-hosted job lifecycle"
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  local-request-bound-contract:
+    name: Local request-bound lifecycle
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+      - name: Start deterministic contract runner
+        env:
+          FORKWISE_ANALYZER_VERSION: forkwise-contract/0.1.0
+        run: |
+          node scripts/contract-runner-server.mjs > /tmp/forkwise-contract.log 2>&1 &
+          echo $! > /tmp/forkwise-contract.pid
+          for attempt in $(seq 1 30); do
+            if curl --silent --fail http://127.0.0.1:8787/functions/v1/review-api/health > /dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/forkwise-contract.log
+          exit 1
+      - name: Validate request-bound job lifecycle
+        env:
+          FORKWISE_RUNNER_BASE: http://127.0.0.1:8787/functions/v1/review-api
+          FORKWISE_SMOKE_REPOSITORY: https://github.com/octocat/Hello-World
+          FORKWISE_SMOKE_MODE: lifecycle
+          FORKWISE_EXPECT_ANALYZER_VERSION: forkwise-contract/0.1.0
+          FORKWISE_SMOKE_TIMEOUT_MS: "30000"
+        run: node scripts/smoke-runner.mjs
+      - name: Print contract runner logs on failure
+        if: failure()
+        run: cat /tmp/forkwise-contract.log || true
+      - name: Stop contract runner
+        if: always()
+        run: |
+          if [ -f /tmp/forkwise-contract.pid ]; then
+            kill "$(cat /tmp/forkwise-contract.pid)" 2>/dev/null || true
+          fi
+
+  hosted-health:
+    name: Published runner health contract
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+      - name: Validate hosted health only
+        env:
+          FORKWISE_RUNNER_BASE: https://forkwise-runner.lovable.app/functions/v1/review-api
+          FORKWISE_SMOKE_MODE: health
+          FORKWISE_EXPECT_ANALYZER_VERSION: forkwise-hosted/0.1.0
+          FORKWISE_SMOKE_TIMEOUT_MS: "15000"
+        run: node scripts/smoke-runner.mjs
+
+  hosted-lifecycle:
+    name: Published runner full lifecycle
+    if: ${{ (github.event_name == 'workflow_dispatch' && inputs.full_hosted_lifecycle) || vars.FORKWISE_HOSTED_LIFECYCLE_ENABLED == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+      - name: Validate hosted runner lifecycle
+        env:
+          FORKWISE_RUNNER_BASE: https://forkwise-runner.lovable.app/functions/v1/review-api
+          FORKWISE_SMOKE_REPOSITORY: https://github.com/octocat/Hello-World
+          FORKWISE_SMOKE_MODE: lifecycle
+          FORKWISE_EXPECT_ANALYZER_VERSION: forkwise-hosted/0.1.0
+          FORKWISE_SMOKE_TIMEOUT_MS: "120000"
+        run: node scripts/smoke-runner.mjs

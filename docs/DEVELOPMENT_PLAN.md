@@ -1,84 +1,134 @@
 # Open Source Reviewer — Development Plan and Execution Log
 
-> **Status:** Release candidate prepared  
-> **Working branch:** `main`  
-> **Current checkpoint:** Step 24 — deploy and live validate  
-> **Last updated:** 2026-08-30
+> **Status:** Public reviewer live; hosted runner lifecycle blocked on deferred Lovable deployment  
+> **Working method:** feature branch → pull request → GitHub Actions → merge → Pages deploy  
+> **Current checkpoint:** Steps 39–41 complete in GitHub-only cycle; Step 42 awaits Lovable credits  
+> **Last updated:** 2026-08-31
 
-The 24-step execution board is maintained in [`MASTER_DEVELOPMENT_PLAN.md`](MASTER_DEVELOPMENT_PLAN.md). This file records what changed in each development cycle and the evidence produced.
+The execution board is maintained in [`MASTER_DEVELOPMENT_PLAN.md`](MASTER_DEVELOPMENT_PLAN.md). This file records development cycles, validation evidence, blockers, and the exact next action.
 
 ## Current objective
 
-Publish the evidence-first browser preview from a validated `main` commit, verify the GitHub Actions and Pages results, smoke-test the live sample on desktop and mobile, and record the exact deployment provenance.
+Complete every runner-readiness task that does not require Lovable credits, leave the public reviewer in its proven browser-analysis mode, and reduce the later hosted deployment to one migration/handler/verification cycle.
 
-## Development cycle — 2026-08-30: full v0.3 implementation
+## Development cycle — 2026-08-31: GitHub-only hosted-runner readiness
 
-### Delivered
+### Trigger
 
-- Replaced the documentation-only repository baseline with a runnable application.
-- Added a professional responsive intake and report experience.
-- Added public GitHub URL validation and a read-only, commit-pinned GitHub client.
-- Added artifact classification and bounded content selection.
-- Added normalized evidence/finding/report contracts.
-- Added deterministic analyzers for maintenance, documentation, license, tests, CI, deployment, operations, external services, telemetry, security posture, secrets, portability, and contributor readiness.
-- Added six README Reality Check claim families.
-- Added contextual Fit/Trust/Run/Own/Exit dimensions and the five-outcome decision engine.
-- Added evidence explorer, filters, JSON/Markdown exports, and pilot checklist.
-- Added quality and GitHub Pages workflows.
-- Added architecture, security, analyzer, validation, and backend-transition documentation.
+The published Lovable service accepts review requests but leaves jobs in `queued`. A GitHub Actions end-to-end smoke test reproduced the condition for two minutes and failed with a client timeout.
 
-### Validation evidence
+### Root cause
+
+The hosted serverless handler starts work with an unawaited background promise. The request returns before the platform guarantees execution of that promise. Polling repeats the same pattern and does not create a durable worker.
+
+### Delivered without Lovable credits
+
+- Request-bound execution reference implementation with expiring lease tokens.
+- Atomic in-process claim, progress, completion, failure, and idempotency operations for memory and file stores.
+- Stale-lease recovery and late-invocation protection.
+- Duplicate-report prevention.
+- Exact hosted route-prefix compatibility in the local API.
+- Strict validated context and client request identifiers.
+- Deterministic local lifecycle server and smoke script.
+- CI split into:
+  - required local request-bound lifecycle;
+  - required published health check;
+  - opt-in published full lifecycle.
+- Production PostgreSQL migration for lease/claim/progress/completion/failure RPCs.
+- Hosted deployment handoff and updated operations documentation.
+- README corrected so health/provisioning are not represented as completed hosted analysis.
+
+### Local validation before repository CI
 
 ```text
-npm run validate
-  JavaScript syntax: 16 files passed
-  Static validation: passed
-  Tests: 49 passed, 0 failed
-  Production build: passed
+node --check server/contracts.js
+node --check server/job-store.js
+node --check server/request-bound-runner.js
+node --check server/api.js
+node --check scripts/contract-runner-server.mjs
+node --check scripts/smoke-runner.mjs
+node --check tests/request-bound-runner.test.js
 
-python scripts/ui_validation.py
-  Chromium 1440×1000: passed, 0 px overflow
-  Chromium 768×1024: passed, 0 px overflow
-  Chromium 390×844: passed, 0 px overflow
-  Chromium 320×720: passed, 0 px overflow
-  Console/page errors: 0
+node --test tests/request-bound-runner.test.js
+  7 passed
+  0 failed
+
+Deterministic lifecycle smoke
+  health: ok
+  job: queued → completed
+  report schema: forkwise-report/v1
+  decision: Pilot
+  dimensions: 5
+  commit SHA: 40 characters
+  reports persisted: 1
 ```
 
-The browser harness also validated the Pilot decision, five dimensions, 18 sample findings, 21 evidence records, six claim rows, filters, JSON download, invalid-host recovery, and visible focus.
+The complete repository validation is delegated to GitHub Actions after the branch commit. The change is mergeable only if Quality, the local request-bound lifecycle, and published health jobs are green.
 
 ### Security result
 
-- No repository code execution.
-- No `innerHTML` rendering of repository data.
-- Bounded selected text artifacts.
-- Suspected-secret redaction tested in analysis and exports.
-- Exact commit provenance retained.
-- Runtime behavior and coverage uncertainty disclosed.
+- Static-only boundary unchanged.
+- Repository-controlled code is not executed.
+- Concurrent polls cannot execute the same active lease.
+- An expired lease can be recovered.
+- A stale invocation cannot complete or fail a newer lease.
+- Unexpected error details are replaced with a generic public message.
+- CORS mutation allowlist remains explicit; no wildcard origin.
+- PostgreSQL RPCs are restricted to `service_role`.
 
 ### Known limitations
 
-- Public GitHub repositories only.
-- Anonymous GitHub API quota.
-- Bounded high-value text inspection rather than complete semantic parsing.
-- Static indicators do not prove runtime behavior.
-- No private repositories, saved history, authenticated accounts, organization policy profiles, or isolated backend workers yet.
-- Live deployment remains unverified until GitHub Actions processes the release commit.
+- File-store atomicity is in-process only; it is a local reference, not a distributed production database.
+- The published Lovable handler is unchanged until credits are available.
+- The hosted job lifecycle therefore remains blocked.
+- The public reviewer remains in browser-analysis mode.
+- Request-bound execution is a beta bridge; a durable worker queue remains a production hardening step.
 
-### Next action
+### Exact next action requiring Lovable credits
 
-1. Commit the complete v0.3 release candidate to `main`.
-2. Inspect the Quality and Pages workflows.
-3. Correct any workflow/deployment failure.
-4. Smoke-test the deployed URL and embedded sample.
-5. Update Step 24 and this log with the live URL, deployment commit, and test result.
+1. Apply `supabase/migrations/20260831_request_bound_execution.sql`.
+2. Remove fire-and-forget `void runJob(...)` calls.
+3. Make the status endpoint atomically claim and await analysis using the returned lease token.
+4. Persist completion/failure through the matching service-role RPC.
+5. Deploy the Lovable project.
+6. Manually run the full hosted lifecycle workflow.
+7. Set repository variable `FORKWISE_HOSTED_LIFECYCLE_ENABLED=true` only after it passes.
+8. Activate hosted mode in the Pages reviewer and revalidate desktop/mobile progress and failures.
+
+Full handoff: [`HOSTED_RUNNER_HANDOFF.md`](HOSTED_RUNNER_HANDOFF.md).
+
+## Previous delivery evidence
+
+### Browser reviewer and operator console
+
+- Live reviewer: `https://yashumani.github.io/open-source-reviewer-app/`
+- Live operator console: `https://yashumani.github.io/open-source-reviewer-app/operator.html`
+- Latest merged operator cycle before this work: commit `14e2168785019638bac2d20d521838d3f0c99d08`
+- Quality: 62 passed, 0 failed
+- Pages build/deploy: successful
+
+### Product capabilities already delivered
+
+- Public GitHub URL validation and commit pinning.
+- Bounded read-only repository evidence collection.
+- Deterministic analyzers and normalized evidence.
+- README Reality Check.
+- Fit/Trust/Run/Own/Exit dimensions.
+- Adopt/Pilot/Fork/Avoid/Insufficient Evidence decisions.
+- Responsive report, evidence explorer, exports, and pilot checklist.
+- Operator health/status console.
+- Hosted database and API shell.
 
 ## Decision log
 
 | Date | Decision | Reason |
 | --- | --- | --- |
-| 2026-08-30 | Continue bootstrap directly on `main` | Keep progress visible in the repository as requested. |
-| 2026-08-30 | Use a zero-dependency static preview | Immediate auditability, reliable Pages deployment, and minimal supply-chain surface. |
+| 2026-08-30 | Use a zero-dependency static reviewer | Immediate auditability, reliable Pages deployment, and minimal supply-chain surface. |
 | 2026-08-30 | Pin every analysis to the default-branch commit | Preserve reproducible evidence when branch contents change. |
-| 2026-08-30 | Read at most 24 high-value text artifacts in the browser | Bound anonymous API usage and repository-content exposure. |
-| 2026-08-30 | Treat the LLM as a future synthesis layer, not a fact source | Deterministic evidence must remain independently testable. |
-| 2026-08-30 | Preserve a separate backend transition | Deeper analysis requires isolated workers rather than more browser privilege. |
+| 2026-08-30 | Read at most 24 high-value text artifacts | Bound API usage and repository-content exposure. |
+| 2026-08-30 | Treat AI as a future synthesis layer, not a fact source | Deterministic evidence must remain independently testable. |
+| 2026-08-30 | Provision Lovable hosting and PostgreSQL | Establish the public API/database foundation. |
+| 2026-08-30 | Do not activate hosted mode after health alone | Health does not prove the analysis lifecycle. |
+| 2026-08-31 | Use request-bound execution as the beta bridge | It matches the current serverless constraint and can be made retry-safe with leases. |
+| 2026-08-31 | Keep full hosted lifecycle opt-in until fixed | Prevent a known external blocker from hiding regressions in unrelated GitHub work. |
+| 2026-08-31 | Complete all non-credit work in GitHub first | Minimize later Lovable credit usage and make deployment changes reviewable. |
