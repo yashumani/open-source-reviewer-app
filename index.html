@@ -3,10 +3,10 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="description" content="Evidence-first open-source repository adoption due diligence. Decide whether to Adopt, Pilot, Fork, Avoid, or gather more evidence.">
-  <meta name="theme-color" content="#07111f">
-  <meta name="color-scheme" content="dark">
-  <title>ForkWise — Open Source Adoption Review</title>
+  <meta name="description" content="GitHub-native, evidence-first open-source repository adoption due diligence. Decide whether to Adopt, Pilot, Fork, Avoid, or gather more evidence.">
+  <meta name="theme-color" content="#0d1117">
+  <meta name="color-scheme" content="dark light">
+  <title>ForkWise · Repository Review Workspace</title>
   <link rel="icon" href="assets/mark.svg" type="image/svg+xml">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="stylesheet" href="styles.css">
@@ -18,39 +18,69 @@
 
   <header class="site-header">
     <a class="brand" href="#top" aria-label="ForkWise home">
-      <img src="assets/mark.svg" width="38" height="38" alt="">
+      <img src="assets/mark.svg" width="34" height="34" alt="">
       <span class="brand-copy">
         <strong>ForkWise</strong>
-        <small>Open Source Reviewer</small>
+        <small>Repository review</small>
       </span>
     </a>
-    <nav class="header-nav" aria-label="Primary navigation">
-      <a href="#how-it-works">How it works</a>
-      <a href="#security-boundary">Safety</a>
-      <a href="docs/MASTER_DEVELOPMENT_PLAN.md">Development plan</a>
+    <a class="header-search" href="#repo-url" aria-label="Go to repository URL input">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.4-3.4"/></svg>
+      <span>Paste or search a repository</span>
+      <kbd>/</kbd>
+    </a>
+    <nav class="header-nav" aria-label="Global navigation">
+      <a href="operator.html">Runner</a>
+      <a href="docs/GITHUB_NATIVE_REDESIGN.md">Design</a>
+      <a href="https://github.com/yashumani/open-source-reviewer-app" target="_blank" rel="noreferrer">Source</a>
     </nav>
-    <span class="build-pill" title="Current application version">v0.3 preview</span>
+    <span class="build-pill" title="Current application version">public preview</span>
   </header>
+
+  <div class="repo-chrome" aria-label="Repository workspace navigation">
+    <div class="repo-context">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5.75C3 4.78 3.78 4 4.75 4h5.5L12 6h7.25c.97 0 1.75.78 1.75 1.75v10.5c0 .97-.78 1.75-1.75 1.75H4.75C3.78 20 3 19.22 3 18.25Z"/></svg>
+      <a href="#top">forkwise</a><span>/</span><strong>repository-review</strong><span class="visibility-label">Public</span>
+    </div>
+    <nav class="repo-tabs" aria-label="Repository sections">
+      <a class="active" href="#top"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16v16H4zM8 8h8M8 12h8M8 16h5"/></svg>Review</a>
+      <a href="#how-it-works"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3v12M18 9v12M6 15c0-4 12-2 12-6"/><circle cx="6" cy="3" r="2"/><circle cx="18" cy="21" r="2"/></svg>Workflow</a>
+      <a href="#security-boundary"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/></svg>Security</a>
+      <a href="operator.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 17l6-6 4 4 6-8"/><path d="M4 21h16"/></svg>Actions</a>
+    </nav>
+  </div>
 
   <main id="main-content">
     <section id="intake-view" class="intake-view" aria-labelledby="hero-title">
       <div id="top" class="hero-shell">
-        <div class="hero-copy">
-          <div class="eyebrow"><span class="pulse-dot" aria-hidden="true"></span> Evidence-first adoption due diligence</div>
-          <h1 id="hero-title">Know what you inherit<br><span>before you fork.</span></h1>
-          <p class="hero-lead">Paste a public GitHub repository, tell us how you intend to use it, and receive a commit-pinned recommendation: <strong>Adopt, Pilot, Fork, Avoid, or Insufficient evidence.</strong></p>
-          <div class="hero-proof" aria-label="Product principles">
-            <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/></svg>No repository code execution</span>
-            <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></svg>File-level evidence</span>
-            <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 2v4M16 2v4M3 10h18"/><rect x="3" y="4" width="18" height="18" rx="2"/><path d="m9 16 2 2 4-4"/></svg>Commit-pinned reports</span>
+        <article class="hero-copy readme-panel">
+          <header class="file-header">
+            <div><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6"/></svg><strong>README.md</strong></div>
+            <span>decision workspace</span>
+          </header>
+          <div class="readme-body">
+            <div class="eyebrow"><span class="pulse-dot" aria-hidden="true"></span> Commit-pinned repository intelligence</div>
+            <h1 id="hero-title">Review repositories<br><span>like a maintainer.</span></h1>
+            <p class="hero-lead">See claims as diffs, findings as issues, and adoption readiness as checks. Paste a public GitHub repository and get an evidence-backed recommendation: <strong>Adopt, Pilot, Fork, Avoid, or Insufficient evidence.</strong></p>
+            <div class="repo-signal-row" aria-label="Current reviewer scope">
+              <span><strong>5</strong><small>decision dimensions</small></span>
+              <span><strong>1 SHA</strong><small>reproducible snapshot</small></span>
+              <span><strong>0</strong><small>repository commands run</small></span>
+            </div>
+            <div class="hero-proof" aria-label="Product principles">
+              <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/></svg>Static-only inspection</span>
+              <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></svg>File-level evidence</span>
+              <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 2v4M16 2v4M3 10h18"/><rect x="3" y="4" width="18" height="18" rx="2"/><path d="m9 16 2 2 4-4"/></svg>Commit-pinned reports</span>
+            </div>
           </div>
-        </div>
+        </article>
 
         <section class="review-card" aria-labelledby="review-card-title">
           <div class="card-heading">
             <div>
-              <span class="step-kicker">New review</span>
-              <h2 id="review-card-title">Describe the adoption decision</h2>
+              <span class="step-kicker">New repository review</span>
+              <h2 id="review-card-title">Open an adoption check</h2>
+              <p>Define the repository, intended use, and constraints before analysis begins.</p>
             </div>
             <button id="sample-review" class="button button-ghost button-small" type="button">Load sample</button>
           </div>
@@ -146,7 +176,7 @@
       <section id="analysis-progress" class="progress-panel" aria-live="polite" aria-labelledby="progress-title" hidden>
         <div class="progress-orb" aria-hidden="true"><span></span><span></span><span></span></div>
         <div class="progress-copy">
-          <span class="step-kicker">Static review in progress</span>
+          <span class="step-kicker">Workflow run · static analysis</span>
           <h2 id="progress-title">Preparing repository evidence</h2>
           <p id="progress-detail">The reviewer is initializing.</p>
           <div class="progress-track" aria-hidden="true"><span id="progress-bar"></span></div>
@@ -155,22 +185,22 @@
       </section>
 
       <section id="how-it-works" class="process-section" aria-labelledby="process-title">
-        <div class="section-heading centered">
-          <span class="eyebrow">Context changes the answer</span>
-          <h2 id="process-title">From repository URL to adoption decision</h2>
-          <p>The reviewer separates observable facts from interpretation, then applies your deployment, data, and ownership constraints.</p>
-        </div>
+        <header class="section-heading box-heading">
+          <div><span class="eyebrow">Review workflow</span><h2 id="process-title">From repository URL to adoption decision</h2></div>
+          <p>Observable repository facts stay separate from contextual interpretation.</p>
+        </header>
         <div class="process-grid">
-          <article><span>01</span><h3>Pin evidence</h3><p>Resolve the default branch to an exact commit and build a bounded, read-only file inventory.</p></article>
-          <article><span>02</span><h3>Verify claims</h3><p>Compare README promises with deployment, test, security, telemetry, and portability evidence.</p></article>
-          <article><span>03</span><h3>Apply context</h3><p>Evaluate Fit, Trust, Run, Own, and Exit against your intended use and constraints.</p></article>
-          <article><span>04</span><h3>Decide next action</h3><p>Receive an auditable recommendation, blockers, unresolved questions, and a pilot checklist.</p></article>
+          <article><span>01</span><div><h3>Pin evidence</h3><p>Resolve the default branch to an exact commit and build a bounded, read-only file inventory.</p></div><strong>commit</strong></article>
+          <article><span>02</span><div><h3>Verify claims</h3><p>Compare README promises with deployment, test, security, telemetry, and portability evidence.</p></div><strong>diff</strong></article>
+          <article><span>03</span><div><h3>Apply context</h3><p>Evaluate Fit, Trust, Run, Own, and Exit against your intended use and constraints.</p></div><strong>rules</strong></article>
+          <article><span>04</span><div><h3>Decide next action</h3><p>Receive an auditable recommendation, blockers, unresolved questions, and a pilot checklist.</p></div><strong>check</strong></article>
         </div>
       </section>
 
       <section id="security-boundary" class="safety-section" aria-labelledby="safety-title">
+        <div class="security-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/></svg></div>
         <div class="safety-copy">
-          <span class="eyebrow">Designed for untrusted repositories</span>
+          <span class="eyebrow">Security policy</span>
           <h2 id="safety-title">Static inspection. No install scripts. No repository execution.</h2>
           <p>ForkWise reads public metadata and a bounded set of high-value text artifacts. It does not run package managers, tests, shell scripts, Dockerfiles, Makefiles, or repository-controlled workflows.</p>
         </div>
@@ -188,7 +218,7 @@
         <div class="report-identity">
           <button id="new-review" class="icon-button" type="button" aria-label="Start a new review"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg></button>
           <div>
-            <span class="step-kicker">Commit-pinned review</span>
+            <span class="step-kicker">Repository review</span>
             <h1 id="report-name">Repository</h1>
             <p id="report-description"></p>
           </div>
@@ -203,8 +233,9 @@
       <div id="report-provenance" class="provenance-bar"></div>
 
       <section id="decision-banner" class="decision-banner" aria-labelledby="decision-value">
+        <div class="decision-state-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></div>
         <div class="decision-main">
-          <span class="step-kicker">Recommendation</span>
+          <span class="step-kicker">Adoption check</span>
           <div class="decision-title-row">
             <h2 id="decision-value">Pilot</h2>
             <span id="commit-pill" class="commit-pill"></span>
@@ -234,7 +265,7 @@
         <div class="report-primary">
           <section id="overview-section" class="report-section">
             <div class="section-heading inline-heading">
-              <div><span class="step-kicker">Executive overview</span><h2>Why this decision</h2></div>
+              <div><span class="step-kicker">Checks summary</span><h2>Why this decision</h2></div>
             </div>
             <div id="decision-reasons" class="reason-grid"></div>
             <h3 class="subsection-title">Five adoption dimensions</h3>
@@ -243,7 +274,7 @@
 
           <section id="reality-section" class="report-section">
             <div class="section-heading inline-heading">
-              <div><span class="step-kicker">README Reality Check</span><h2>Claims versus repository evidence</h2></div>
+              <div><span class="step-kicker">README review</span><h2>Claims versus repository evidence</h2></div>
               <p>Absence of evidence is kept separate from contradictory evidence.</p>
             </div>
             <div id="claim-ledger" class="claim-ledger"></div>
@@ -251,7 +282,7 @@
 
           <section id="findings-section" class="report-section">
             <div class="section-heading inline-heading">
-              <div><span class="step-kicker">Deterministic review</span><h2>Findings <span id="findings-count" class="count-badge">0</span></h2></div>
+              <div><span class="step-kicker">Repository issues</span><h2>Findings <span id="findings-count" class="count-badge">0</span></h2></div>
             </div>
             <div class="finding-tools">
               <label class="search-field" for="findings-search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><input id="findings-search" type="search" placeholder="Search findings"></label>
@@ -263,7 +294,7 @@
 
           <section id="operations-section" class="report-section">
             <div class="section-heading inline-heading">
-              <div><span class="step-kicker">Operational bill of materials</span><h2>What you may inherit</h2></div>
+              <div><span class="step-kicker">Repository environment</span><h2>What you may inherit</h2></div>
             </div>
             <div id="operations-list" class="operations-grid"></div>
             <h3 class="subsection-title">Technology signals</h3>
@@ -272,14 +303,14 @@
 
           <section id="evidence-section" class="report-section">
             <div class="section-heading inline-heading">
-              <div><span class="step-kicker">Traceable sources</span><h2>Evidence <span id="evidence-count" class="count-badge">0</span></h2></div>
+              <div><span class="step-kicker">Files and metadata</span><h2>Evidence <span id="evidence-count" class="count-badge">0</span></h2></div>
             </div>
             <div id="evidence-list" class="evidence-list"></div>
           </section>
 
           <section id="pilot-section" class="report-section">
             <div class="section-heading inline-heading">
-              <div><span class="step-kicker">Decision closure</span><h2>Repository-specific pilot checklist</h2></div>
+              <div><span class="step-kicker">Merge readiness</span><h2>Repository-specific pilot checklist</h2></div>
               <button id="copy-checklist" class="button button-ghost button-small" type="button">Copy checklist</button>
             </div>
             <div id="pilot-checklist" class="checklist"></div>
@@ -288,17 +319,17 @@
 
         <aside class="report-sidebar" aria-label="Report supporting details">
           <section class="sidebar-card">
-            <span class="step-kicker">Repository facts</span>
-            <h2>Snapshot</h2>
+            <span class="step-kicker">About</span>
+            <h2>Repository snapshot</h2>
             <dl id="repo-facts" class="facts-list"></dl>
           </section>
           <section class="sidebar-card blocker-card">
-            <span class="step-kicker">Blocking risks</span>
+            <span class="step-kicker">Required checks</span>
             <h2>Must resolve</h2>
             <div id="blocker-list" class="sidebar-list"></div>
           </section>
           <section class="sidebar-card">
-            <span class="step-kicker">Unresolved questions</span>
+            <span class="step-kicker">Open questions</span>
             <h2>Validate next</h2>
             <div id="question-list" class="sidebar-list numbered"></div>
           </section>
@@ -314,7 +345,7 @@
 
   <footer class="site-footer">
     <p>ForkWise is decision support—not a security certification, legal opinion, or substitute for runtime validation.</p>
-    <a href="https://github.com/yashumani/open-source-reviewer-app" target="_blank" rel="noreferrer">Source repository</a>
+    <div><a href="operator.html">Runner status</a><a href="docs/GITHUB_NATIVE_REDESIGN.md">Design rationale</a><a href="https://github.com/yashumani/open-source-reviewer-app" target="_blank" rel="noreferrer">Source repository</a></div>
   </footer>
 
   <div id="live-status" class="sr-only" aria-live="polite"></div>

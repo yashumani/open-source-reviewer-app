@@ -3,11 +3,11 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="description" content="ForkWise Runner operator console: live health, recent jobs, safety limits, and end-to-end API smoke testing.">
-  <meta name="theme-color" content="#07111f">
+  <meta name="description" content="ForkWise Runner operator console: GitHub Actions-style health, recent jobs, safety limits, and end-to-end API smoke testing.">
+  <meta name="theme-color" content="#0d1117">
   <meta name="color-scheme" content="dark light">
   <meta name="forkwise-runner-base" content="https://forkwise-runner.lovable.app/functions/v1/review-api">
-  <title>ForkWise Runner — Operator Console</title>
+  <title>ForkWise Runner · Actions Console</title>
   <link rel="icon" href="assets/mark.svg" type="image/svg+xml">
   <link rel="stylesheet" href="operator.css">
 </head>
@@ -19,13 +19,13 @@
 
   <header class="operator-header">
     <a class="brand" href="index.html" aria-label="ForkWise reviewer home">
-      <img src="assets/mark.svg" width="38" height="38" alt="">
+      <img src="assets/mark.svg" width="34" height="34" alt="">
       <span><strong>ForkWise</strong><small>Runner operations</small></span>
     </a>
     <nav aria-label="Operator navigation">
       <a href="index.html">Reviewer</a>
       <a href="docs/RUNNER_OPERATIONS.md">Runbook</a>
-      <a href="https://github.com/yashumani/open-source-reviewer-app" target="_blank" rel="noreferrer">Source ↗</a>
+      <a href="https://github.com/yashumani/open-source-reviewer-app" target="_blank" rel="noreferrer">Source</a>
     </nav>
     <button id="theme-toggle" class="icon-button" type="button" aria-label="Switch theme">
       <svg class="sun-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41"/></svg>
@@ -33,12 +33,25 @@
     </button>
   </header>
 
+  <div class="operator-repo-chrome" aria-label="Runner repository navigation">
+    <div class="operator-repo-context">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5.75C3 4.78 3.78 4 4.75 4h5.5L12 6h7.25c.97 0 1.75.78 1.75 1.75v10.5c0 .97-.78 1.75-1.75 1.75H4.75C3.78 20 3 19.22 3 18.25Z"/></svg>
+      <span>forkwise /</span><strong>runner-control-plane</strong><span>Public beta</span>
+    </div>
+    <nav class="operator-tabs" aria-label="Runner sections">
+      <a href="index.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16v16H4zM8 8h8M8 12h8M8 16h5"/></svg>Review</a>
+      <a class="active" href="#operator-main"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 17l6-6 4 4 6-8"/><path d="M4 21h16"/></svg>Actions</a>
+      <a href="#boundary-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/></svg>Security</a>
+      <a href="#endpoint-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 9-4 3 4 3M16 9l4 3-4 3M14 5l-4 14"/></svg>API</a>
+    </nav>
+  </div>
+
   <main id="operator-main" class="operator-shell">
     <section class="hero" aria-labelledby="operator-title">
       <div>
-        <div class="eyebrow"><span></span> Hosted static-analysis control plane</div>
-        <h1 id="operator-title">ForkWise Runner<br><em>operator console</em></h1>
-        <p>Observe service health, confirm the static-only safety boundary, inspect the anonymous beta workload, and run a real repository review through the public API.</p>
+        <div class="eyebrow"><span></span> Actions · hosted static-analysis runner</div>
+        <h1 id="operator-title">ForkWise Runner<br><em>workflow control.</em></h1>
+        <p>Inspect service checks, recent jobs, bounded safety controls, and the public review lifecycle from one repository-native operator surface.</p>
       </div>
       <div class="health-card">
         <div id="health-badge" class="health-badge" data-state="loading">
@@ -77,7 +90,7 @@
     <section class="panel jobs-panel" aria-labelledby="jobs-title">
       <header class="panel-heading">
         <div>
-          <span class="section-kicker">Anonymous beta workload</span>
+          <span class="section-kicker">Workflow runs</span>
           <h2 id="jobs-title">Jobs in the last 24 hours</h2>
         </div>
         <p>Last accepted job: <strong id="last-job-at">Loading…</strong></p>
@@ -95,7 +108,7 @@
       <article class="panel boundary-panel" aria-labelledby="boundary-title">
         <header class="panel-heading compact">
           <div>
-            <span class="section-kicker">Hard safety boundary</span>
+            <span class="section-kicker">Security policy</span>
             <h2 id="boundary-title">Inspection without execution</h2>
           </div>
           <span class="shield" aria-hidden="true">
@@ -114,7 +127,7 @@
       <article class="panel limits-panel" aria-labelledby="limits-title">
         <header class="panel-heading compact">
           <div>
-            <span class="section-kicker">Free beta controls</span>
+            <span class="section-kicker">Repository variables</span>
             <h2 id="limits-title">Capacity and retention</h2>
           </div>
         </header>
@@ -136,9 +149,9 @@
     <section class="panel test-panel" aria-labelledby="test-title">
       <header class="panel-heading">
         <div>
-          <span class="section-kicker">End-to-end verification</span>
+          <span class="section-kicker">Workflow dispatch</span>
           <h2 id="test-title">Run a real API smoke test</h2>
-          <p>This submits a public repository, polls the durable job, and retrieves a report. The console displays a safe summary only.</p>
+          <p>Submit a public repository, poll the durable job, and retrieve a safe report summary.</p>
         </div>
         <div id="test-status" class="test-status" data-state="idle" role="status">Ready</div>
       </header>
@@ -218,7 +231,7 @@
 
       <section id="test-result" class="result-card" aria-labelledby="result-title" hidden>
         <header>
-          <div><span class="section-kicker">Safe result summary</span><h3 id="result-title">Runner report retrieved</h3></div>
+          <div><span class="section-kicker">Check summary</span><h3 id="result-title">Runner report retrieved</h3></div>
           <strong id="result-decision">—</strong>
         </header>
         <dl class="result-grid">
@@ -239,7 +252,7 @@
 
     <section class="panel endpoint-panel" aria-labelledby="endpoint-title">
       <header class="panel-heading compact">
-        <div><span class="section-kicker">Versioned contract</span><h2 id="endpoint-title">Public endpoints</h2></div>
+        <div><span class="section-kicker">API files</span><h2 id="endpoint-title">Public endpoints</h2></div>
       </header>
       <div class="endpoint-list">
         <article><span>GET</span><code>/health</code><p>Service, analyzer, schema, execution mode.</p></article>
@@ -253,7 +266,7 @@
 
   <footer class="operator-footer">
     <p>ForkWise Runner · static-only public beta · reports expire automatically.</p>
-    <div><a href="index.html">Reviewer</a><a href="docs/RUNNER_OPERATIONS.md">Operations runbook</a><a href="https://lovable.dev/projects/eba70e78-93f1-43a5-ac32-f6f6facae256" target="_blank" rel="noreferrer">Lovable project ↗</a></div>
+    <div><a href="index.html">Reviewer</a><a href="docs/RUNNER_OPERATIONS.md">Operations runbook</a><a href="https://lovable.dev/projects/eba70e78-93f1-43a5-ac32-f6f6facae256" target="_blank" rel="noreferrer">Lovable project</a></div>
   </footer>
 
   <script type="module" src="src/operator.js"></script>

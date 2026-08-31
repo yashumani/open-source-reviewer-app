@@ -1,0 +1,98 @@
+{
+  "validatedAt": "2026-08-31T19:24:09.084737+00:00",
+  "browserExecutable": "/usr/bin/google-chrome",
+  "result": "passed",
+  "design": "github-native-repository-workspace",
+  "workflowRunId": 33430305189,
+  "artifactId": 9772329835,
+  "commitSha": "f131c13efe78fed33c8e02341c4e43e617d3b19e",
+  "viewports": [
+    {
+      "surface": "reviewer",
+      "name": "desktop",
+      "width": 1440,
+      "height": 1000,
+      "overflow": 0,
+      "decision": "Pilot",
+      "dimensions": 5,
+      "findings": 18,
+      "evidence": 21,
+      "claims": 6,
+      "consoleErrors": 0
+    },
+    {
+      "surface": "reviewer",
+      "name": "tablet",
+      "width": 768,
+      "height": 1024,
+      "overflow": 0,
+      "decision": "Pilot",
+      "dimensions": 5,
+      "findings": 18,
+      "evidence": 21,
+      "claims": 6,
+      "consoleErrors": 0
+    },
+    {
+      "surface": "reviewer",
+      "name": "mobile",
+      "width": 390,
+      "height": 844,
+      "overflow": 0,
+      "decision": "Pilot",
+      "dimensions": 5,
+      "findings": 18,
+      "evidence": 21,
+      "claims": 6,
+      "consoleErrors": 0
+    },
+    {
+      "surface": "reviewer",
+      "name": "small-mobile",
+      "width": 320,
+      "height": 720,
+      "overflow": 0,
+      "decision": "Pilot",
+      "dimensions": 5,
+      "findings": 18,
+      "evidence": 21,
+      "claims": 6,
+      "consoleErrors": 0
+    },
+    {
+      "surface": "operator",
+      "name": "desktop",
+      "width": 1440,
+      "height": 1000,
+      "overflow": 0,
+      "health": "Operational",
+      "execution": "static-only",
+      "endpointRows": 5,
+      "consoleErrors": 0
+    },
+    {
+      "surface": "operator",
+      "name": "mobile",
+      "width": 390,
+      "height": 844,
+      "overflow": 0,
+      "health": "Operational",
+      "execution": "static-only",
+      "endpointRows": 5,
+      "consoleErrors": 0
+    }
+  ],
+  "checks": [
+    "Repository chrome and tabs render",
+    "README and adoption-composer intake layout renders",
+    "Actions-style progress and report workspace render",
+    "Sample report remains functional",
+    "Findings, evidence, claims, dimensions, and sidebar remain populated",
+    "Operator Actions console renders with deterministic mocked health and statistics",
+    "No page-level horizontal overflow at 1440, 768, 390, or 320 pixels",
+    "No glass backdrop filter or ambient marketing gradients",
+    "Report screenshots begin at top-level repository chrome",
+    "Visible keyboard focus",
+    "No browser console or page errors"
+  ]
+}
