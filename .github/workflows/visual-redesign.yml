@@ -1,0 +1,61 @@
+name: Visual Redesign
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "index.html"
+      - "operator.html"
+      - "styles.css"
+      - "operator.css"
+      - "assets/mark.svg"
+      - "src/**"
+      - "scripts/ui_redesign_validation.py"
+      - ".github/workflows/visual-redesign.yml"
+  pull_request:
+    paths:
+      - "index.html"
+      - "operator.html"
+      - "styles.css"
+      - "operator.css"
+      - "assets/mark.svg"
+      - "src/**"
+      - "scripts/ui_redesign_validation.py"
+      - ".github/workflows/visual-redesign.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  github-native-ui:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 24
+
+      - name: Validate application before rendering
+        run: npm run validate
+
+      - name: Install pinned Playwright Python client
+        run: python3 -m pip install --disable-pip-version-check playwright==1.55.0
+
+      - name: Render and validate GitHub-native reviewer and operator
+        run: python3 scripts/ui_redesign_validation.py
+
+      - name: Upload visual evidence
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v4
+        with:
+          name: github-native-redesign-evidence
+          path: |
+            docs/screenshots/github-native-*.png
+            docs/validation/github-native-redesign.json
+          if-no-files-found: error
+          retention-days: 14
