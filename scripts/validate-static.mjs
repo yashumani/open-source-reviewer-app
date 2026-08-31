@@ -98,12 +98,36 @@ if (!/meta\s+name=["']forkwise-runner-base["']/i.test(operatorHtml)) errors.push
 
 const localRefs = await validateLocalRefs(html, "Reviewer");
 const operatorRefs = await validateLocalRefs(operatorHtml, "Operator console");
-await validateImports("src/app.js");
-await validateImports("src/operator.js");
-await validateImports("src/runner-client.js");
+for (const modulePath of [
+  "src/app.js",
+  "src/operator.js",
+  "src/runner-client.js",
+  "src/hosted-report-adapter.js",
+  "src/review-runtime.js",
+]) await validateImports(modulePath);
+
+const runtimeSource = await readFile(path.join(root, "src/review-runtime.js"), "utf8");
+if (!/hostedEnabled:\s*false/.test(runtimeSource)) {
+  errors.push("Hosted reviewer mode must remain disabled until the production lifecycle gate passes.");
+}
+if (!/automaticFallback:\s*false/.test(runtimeSource)) {
+  errors.push("Hosted reviewer mode must not silently fall back after API failures.");
+}
+
+for (const requiredContract of [
+  "docs/api/openapi.json",
+  "docs/api/review-request-v1.schema.json",
+  "docs/api/job-status-v1.schema.json",
+  "docs/api/forkwise-report-v1.schema.json",
+  "supabase/migrations/20260830_forkwise_runner_schema.sql",
+  "supabase/migrations/20260831_request_bound_execution.sql",
+]) {
+  try { await access(path.join(root, requiredContract)); }
+  catch { errors.push(`Missing production-readiness artifact: ${requiredContract}`); }
+}
 
 if (errors.length) {
   console.error(errors.map((error) => `- ${error}`).join("\n"));
   process.exit(1);
 }
-console.log(`Static validation passed: reviewer ${ids.length} IDs/${localRefs.length} assets; operator ${operatorIds.length} IDs/${operatorRefs.length} assets; responsive/accessibility/security checks complete.`);
+console.log(`Static validation passed: reviewer ${ids.length} IDs/${localRefs.length} assets; operator ${operatorIds.length} IDs/${operatorRefs.length} assets; dormant hosted mode, responsive/accessibility/security checks complete.`);
