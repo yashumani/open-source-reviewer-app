@@ -88,6 +88,7 @@ def layout_metrics(page: Page) -> dict[str, Any]:
           bodyBackground: getComputedStyle(document.body).backgroundColor,
           glassBackdrop: getComputedStyle(document.querySelector('.review-card, .panel')).backdropFilter,
           repositoryTabs: document.querySelectorAll('.repo-tabs a, .operator-tabs a').length,
+          scrollY: window.scrollY,
         })"""
     )
 
@@ -106,6 +107,15 @@ def validate_reviewer(browser: Browser, base_url: str, name: str, width: int, he
     page.get_by_role("button", name="Load sample").click()
     page.locator("#report:not([hidden])").wait_for(state="visible", timeout=10_000)
     page.wait_for_function("document.getElementById('decision-value').textContent.trim() === 'Pilot'")
+    page.wait_for_timeout(650)
+    page.evaluate(
+        """() => {
+          document.documentElement.style.scrollBehavior = 'auto';
+          document.activeElement?.blur();
+          window.scrollTo(0, 0);
+        }"""
+    )
+    page.wait_for_timeout(100)
     report_path = SCREENSHOTS / f"github-native-reviewer-report-{name}.png"
     page.screenshot(path=str(report_path), full_page=True)
 
@@ -133,6 +143,7 @@ def validate_reviewer(browser: Browser, base_url: str, name: str, width: int, he
     )
 
     assert metrics["overflow"] <= 1, (name, metrics)
+    assert metrics["scrollY"] == 0, metrics
     assert metrics["repositoryTabs"] >= 4, metrics
     assert metrics["glassBackdrop"] in {"none", ""}, metrics
     assert report["decision"] == "Pilot", report
@@ -267,6 +278,7 @@ def main() -> None:
             "Operator Actions console renders with mocked health/stats",
             "No page-level horizontal overflow at 1440, 768, 390, or 320 px",
             "No glass backdrop filter or ambient marketing gradients",
+            "Report screenshot begins at the top-level repository chrome",
             "Visible keyboard focus",
             "No browser console or page errors",
         ],
