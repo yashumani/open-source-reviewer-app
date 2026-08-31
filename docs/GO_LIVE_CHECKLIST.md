@@ -1,6 +1,20 @@
-# ForkWise Production Go-Live Checklist
+# ForkWise Release Checklists
 
-> The GitHub Pages reviewer is a public preview. This checklist governs promotion of the hosted runner and reviewer integration, not the existing browser-only preview.
+## Community Preview — completed repository gate
+
+- [x] Public GitHub Pages reviewer deployed.
+- [x] GitHub-native responsive interface validated.
+- [x] Static-only boundary documented and regression-tested.
+- [x] Apache License 2.0 and NOTICE committed.
+- [x] Code of Conduct, governance, contribution, support, and security policies committed.
+- [x] Privacy Notice, Community Preview Terms, and Acceptable Use committed.
+- [x] Structured issue forms and pull-request template committed.
+- [x] Community-readiness validator and tests added.
+- [x] Public limitations and hosted-runner status disclosed.
+- [ ] Repository About metadata, private vulnerability reporting, and `main` protection verified by an administrator.
+- [ ] Starter issue backlog published and triaged.
+
+The remaining unchecked community items are repository-administration or issue-triage actions, not application implementation blockers.
 
 ## Hosted execution
 
@@ -24,7 +38,7 @@
 
 ## Security and abuse
 
-- [ ] Static-only boundary is unchanged.
+- [ ] Static-only boundary remains unchanged.
 - [ ] Request, tree, file, content, time, and report limits are enforced server-side.
 - [ ] CORS mutation origins are explicit; no wildcard.
 - [ ] Service-role and provider credentials remain server-only.
@@ -36,11 +50,11 @@
 
 ## Data handling
 
-- [ ] Anonymous retention window is disclosed.
+- [ ] Hosted retention window matches the published hosted notice.
 - [ ] Retention cleanup is scheduled and monitored.
-- [ ] Privacy/data-handling draft has product/legal approval or replacement.
+- [ ] Hosted-service privacy and terms receive product/legal approval or explicit limited-beta approval.
 - [ ] Logs exclude source content, excerpts, credentials, and complete reports.
-- [ ] Incident deletion and credential-rotation procedures are documented.
+- [ ] Incident deletion and credential-rotation procedures are exercised.
 
 ## Reliability and operations
 
@@ -51,7 +65,7 @@
 - [ ] Application rollback is tested.
 - [ ] Capacity and provider-outage runbooks are reviewed.
 
-## Public reviewer activation
+## Public hosted-reviewer activation
 
 - [ ] Hosted mode enabled only after the backend gate passes.
 - [ ] Browser fallback behavior is explicit and never silent after security/quota failures.
@@ -62,10 +76,11 @@
 - [ ] No browser console or page errors.
 - [ ] Retention, quota, static-only, and decision-support limitations are visible.
 
-## Governance
+## Production/general availability
 
-- [ ] Project license selected and committed.
-- [ ] Terms, acceptable-use, privacy, and security-response contacts approved.
-- [ ] Release notes and exact commit recorded.
+- [ ] Hosted lifecycle, identity, abuse, retention, observability, backup, rollback, and incident gates are complete.
+- [ ] Legal/privacy review reflects the actual selected hosting stack.
+- [ ] Required GitHub branch protections are enforced.
+- [ ] Release notes and exact commit are recorded.
 - [ ] All required GitHub Actions are green on the release commit.
-- [ ] Go/no-go decision recorded with owner and timestamp.
+- [ ] Explicit owner go/no-go decision is recorded with timestamp.

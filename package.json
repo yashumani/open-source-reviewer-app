@@ -1,9 +1,27 @@
 {
   "name": "forkwise-open-source-reviewer",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "private": true,
   "type": "module",
-  "description": "GitHub-native, evidence-first open-source adoption due diligence with a static-analysis runner and formal review contracts.",
+  "description": "GitHub-native, evidence-first open-source adoption due diligence with commit-pinned static analysis.",
+  "license": "Apache-2.0",
+  "author": "Yashu Sharma",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yashumani/open-source-reviewer-app.git"
+  },
+  "homepage": "https://yashumani.github.io/open-source-reviewer-app/",
+  "bugs": {
+    "url": "https://github.com/yashumani/open-source-reviewer-app/issues"
+  },
+  "keywords": [
+    "open-source",
+    "github",
+    "repository-analysis",
+    "static-analysis",
+    "software-supply-chain",
+    "developer-tools"
+  ],
   "scripts": {
     "dev": "node scripts/serve.mjs",
     "serve": "node scripts/serve.mjs",
@@ -12,7 +30,8 @@
     "check:syntax": "node scripts/check.mjs",
     "check:static": "node scripts/validate-static.mjs",
     "check:contracts": "node scripts/validate-api-contract.mjs && node scripts/validate-workflows.mjs",
-    "check": "npm run check:syntax && npm run check:static && npm run check:contracts",
+    "check:community": "node scripts/validate-community.mjs",
+    "check": "npm run check:syntax && npm run check:static && npm run check:contracts && npm run check:community",
     "test": "node --test",
     "test:backend": "node --test tests/backend.test.js tests/request-bound-runner.test.js",
     "test:runner": "node --test tests/runner-client.test.js tests/operator-model.test.js tests/request-bound-runner.test.js",

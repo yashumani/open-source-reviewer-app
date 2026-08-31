@@ -1,0 +1,54 @@
+name: Feature request
+description: Propose a focused product, workflow, or contributor-experience improvement.
+title: "feat: "
+labels:
+  - enhancement
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem to solve
+      description: Describe the user decision or workflow that is currently difficult.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behavior
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Repository evidence or examples
+      description: Link public repositories or commit-pinned examples when useful.
+  - type: dropdown
+    id: scope
+    attributes:
+      label: Primary scope
+      options:
+        - Intake and context
+        - Analyzer and findings
+        - README Reality Check
+        - Decision model
+        - Report and export
+        - Runner and API
+        - Contributor experience
+        - Documentation
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+  - type: textarea
+    id: out_of_scope
+    attributes:
+      label: Suggested out-of-scope boundary
+  - type: checkboxes
+    id: boundary
+    attributes:
+      label: Safety alignment
+      options:
+        - label: This proposal preserves static-only analysis, or explicitly identifies that it requires a separate threat-model decision.
+          required: true

@@ -1,0 +1,97 @@
+name: Analyzer rule proposal
+description: Propose a deterministic, evidence-backed repository review rule.
+title: "rule: "
+labels:
+  - enhancement
+body:
+  - type: input
+    id: rule_id
+    attributes:
+      label: Proposed rule ID
+      placeholder: trust-example-signal
+    validations:
+      required: true
+  - type: dropdown
+    id: dimension
+    attributes:
+      label: Primary dimension
+      options:
+        - Fit
+        - Trust
+        - Run
+        - Own
+        - Exit
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Observable evidence
+      description: Name exact files, manifest entries, metadata, or patterns. The rule must not depend on executing repository code.
+    validations:
+      required: true
+  - type: textarea
+    id: conclusion
+    attributes:
+      label: Supported conclusion
+      description: State what the evidence proves and what remains unknown.
+    validations:
+      required: true
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Suggested severity
+      options:
+        - info
+        - low
+        - medium
+        - high
+        - critical
+    validations:
+      required: true
+  - type: dropdown
+    id: confidence
+    attributes:
+      label: Suggested confidence
+      options:
+        - low
+        - medium
+        - high
+    validations:
+      required: true
+  - type: textarea
+    id: applicability
+    attributes:
+      label: Context and applicability
+      description: Explain how self-host, dependency, fork, or contribute intent changes relevance.
+    validations:
+      required: true
+  - type: textarea
+    id: false_positive
+    attributes:
+      label: False-positive risks
+    validations:
+      required: true
+  - type: textarea
+    id: false_negative
+    attributes:
+      label: False-negative risks
+    validations:
+      required: true
+  - type: textarea
+    id: fixtures
+    attributes:
+      label: Proposed fixtures and tests
+    validations:
+      required: true
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Rule contract
+      options:
+        - label: The rule can run without executing repository-controlled code.
+          required: true
+        - label: The conclusion is no stronger than the cited evidence.
+          required: true
+        - label: Evidence can be pinned to the analyzed commit.
+          required: true

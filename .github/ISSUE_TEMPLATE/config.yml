@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Report a security vulnerability privately
+    url: https://github.com/yashumani/open-source-reviewer-app/security/advisories/new
+    about: Do not disclose credentials, exploit details, or private repository content in a public issue.
+  - name: Read the community preview guide
+    url: https://github.com/yashumani/open-source-reviewer-app/blob/main/docs/COMMUNITY_PREVIEW.md
+    about: Understand current scope, supported feedback, and known limitations.
+  - name: Get support
+    url: https://github.com/yashumani/open-source-reviewer-app/blob/main/SUPPORT.md
+    about: Choose the correct support or contribution channel.
