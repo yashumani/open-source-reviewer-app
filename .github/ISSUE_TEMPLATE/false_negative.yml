@@ -1,0 +1,51 @@
+name: False negative or missing signal
+description: Report important public evidence that ForkWise did not detect or surface.
+title: "false negative: "
+labels:
+  - bug
+body:
+  - type: input
+    id: repository
+    attributes:
+      label: Public repository URL
+      placeholder: https://github.com/owner/repository
+    validations:
+      required: true
+  - type: input
+    id: commit
+    attributes:
+      label: Analyzed commit SHA
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Missed evidence
+      description: Include exact public paths, manifest keys, metadata, or safe excerpts.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected finding or inventory result
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Review context
+      description: Explain why the signal matters for the selected intent and constraints.
+    validations:
+      required: true
+  - type: textarea
+    id: ambiguity
+    attributes:
+      label: Ambiguity and counterexamples
+      description: Note cases where the same evidence would not support the conclusion.
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Submission safety
+      options:
+        - label: All evidence is public and contains no credentials, private source, or personal data.
+          required: true

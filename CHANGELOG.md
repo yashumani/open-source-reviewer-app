@@ -1,76 +1,63 @@
 # Changelog
 
-All notable changes are recorded here. ForkWise is currently a preview/beta; interfaces remain versioned even while implementation details evolve.
+All notable changes are recorded here. ForkWise remains a community preview; interfaces are versioned while implementation details continue to evolve.
 
 ## Unreleased
 
-### Pending
+No unreleased changes recorded.
 
-- Deploy the prepared request-bound lifecycle to the hosted Lovable runner.
-- Prove the hosted full lifecycle and activate the dormant reviewer integration.
-- Complete owner decisions for project license, privacy, terms, retention, and acceptable use.
+## 0.9.0 — 2026-08-31
+
+### Added
+
+- Apache License 2.0 and NOTICE.
+- Contributor Covenant-based Code of Conduct.
+- Governance, support, privacy, preview terms, and acceptable-use documents.
+- Expanded contributor workflow with DCO sign-off.
+- CODEOWNERS and pull-request template.
+- Structured issue forms for bugs, features, analyzer rules, false positives, false negatives, and documentation.
+- Community preview, maintainer, repository-settings, and licensing decision documents.
+- Community-readiness validator and regression tests.
+
+### Changed
+
+- README now presents the public crowdsourcing release, policies, contribution routes, and accurate hosted-runner status.
+- Package metadata now identifies the license, repository, homepage, issue tracker, and community validation gate.
 
 ## 0.8.0 — 2026-08-31
 
 ### Added
 
-- GitHub-native global and repository navigation for the reviewer.
-- README-style product overview and adoption-check composer.
-- Actions-style analysis progress and runner operator console.
-- Checks-style decision summary, repository About sidebar, issue-like findings, and file-like evidence rows.
-- New ForkWise branch/check identity mark.
-- Dedicated redesign plan and implementation-evidence documents.
-- Playwright visual workflow covering reviewer desktop, tablet, mobile, and small-mobile states plus operator desktop/mobile states.
-- Machine-readable responsive validation evidence.
-
-### Changed
-
-- Replaced generic glass, glow, and oversized SaaS styling with repository canvas, border, status, and evidence tokens.
-- Reduced radii, decoration, and empty space while increasing technical scanability.
-- Reframed report sections around repository checks, README review, issues, files, environment metadata, and merge readiness.
-- Updated the application manifest and repository documentation.
-
-### Validation
-
-- Existing sample report remains functional with five dimensions, 18 findings, 21 evidence records, and six claim rows.
-- Zero page-level overflow at 1440, 768, 390, and 320 pixel reviewer widths.
-- Zero page-level overflow at 1440 and 390 pixel operator widths.
-- No browser console errors, backdrop-filter glass treatment, or ambient marketing gradients.
-- Hosted runner mode remains disabled and the static-only safety boundary is unchanged.
+- GitHub-native repository workspace design.
+- README-style intake and adoption-check composer.
+- Actions-style progress and operator console.
+- Checks-style decision summary, issue-like findings, file evidence, and repository About sidebar.
+- Responsive visual workflow for reviewer and operator surfaces.
 
 ## 0.7.0 — 2026-08-31
 
 ### Added
 
-- Formal OpenAPI and JSON Schema contracts for review requests, job status, and `forkwise-report/v1`.
-- Clean PostgreSQL baseline migration and executable database contract tests.
-- Non-root, read-only container packaging and hardened container lifecycle CI.
-- Hosted report adapter and dormant review-runtime selector; hosted mode remains disabled by default.
-- Immutable GitHub Actions pin validation and Dependabot update configuration.
-- Privacy/data-handling draft, observability specification, go-live checklist, and architecture decision records.
+- Formal OpenAPI and JSON Schema contracts.
+- Executable PostgreSQL schema, RLS, lease, idempotency, and retention contract.
+- Non-root, read-only container lifecycle gate.
+- Dormant hosted report adapter and review-runtime selector.
+- Immutable GitHub Actions pins and Dependabot coverage.
+- Privacy/data-handling draft, observability specification, go-live checklist, and ADRs.
 
 ## 0.6.0 — 2026-08-31
 
 ### Added
 
 - Request-bound runner reference implementation with expiring leases.
-- Atomic memory/file-store claim, progress, completion, failure, and idempotency operations.
-- PostgreSQL lease/claim/progress/completion/failure migration.
-- Deterministic local lifecycle smoke and layered GitHub Actions gates.
-- Exact `/functions/v1/review-api` and `/api/public/review-api` route compatibility.
-
-### Changed
-
-- Documentation now distinguishes hosted health from a working hosted analysis lifecycle.
-- Full hosted lifecycle verification is opt-in until the Lovable deployment fix is applied.
+- Atomic claim, progress, completion, failure, and idempotency operations.
+- Deterministic local lifecycle smoke and hosted deployment handoff.
 
 ## 0.5.0 — 2026-08-30
 
 ### Added
 
-- Hosted runner operator console.
-- Hardened asynchronous runner client.
-- Health/statistics display and API test panel.
+- Hosted runner operator console, hardened runner client, health/statistics display, and API test panel.
 
 ## 0.4.0 — 2026-08-30
 

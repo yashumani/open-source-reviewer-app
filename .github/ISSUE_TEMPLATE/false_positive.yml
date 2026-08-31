@@ -1,0 +1,51 @@
+name: False positive
+description: Report a finding that is not supported by the cited repository evidence.
+title: "false positive: "
+labels:
+  - bug
+body:
+  - type: input
+    id: repository
+    attributes:
+      label: Public repository URL
+      placeholder: https://github.com/owner/repository
+    validations:
+      required: true
+  - type: input
+    id: commit
+    attributes:
+      label: Analyzed commit SHA
+    validations:
+      required: true
+  - type: input
+    id: finding
+    attributes:
+      label: Finding title or rule ID
+    validations:
+      required: true
+  - type: textarea
+    id: cited_evidence
+    attributes:
+      label: Evidence cited by ForkWise
+      description: Provide paths and safe excerpts only.
+    validations:
+      required: true
+  - type: textarea
+    id: explanation
+    attributes:
+      label: Why the conclusion is unsupported
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected rule behavior
+    validations:
+      required: true
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Submission safety
+      options:
+        - label: All evidence is public and contains no credentials, private source, or personal data.
+          required: true

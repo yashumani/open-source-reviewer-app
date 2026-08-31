@@ -1,0 +1,35 @@
+name: Documentation improvement
+description: Report missing, outdated, confusing, or inaccessible project documentation.
+title: "docs: "
+labels:
+  - documentation
+body:
+  - type: input
+    id: location
+    attributes:
+      label: Document or page
+      placeholder: README.md, CONTRIBUTING.md, live reviewer, etc.
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What is unclear or missing?
+    validations:
+      required: true
+  - type: textarea
+    id: audience
+    attributes:
+      label: Who needs this information?
+    validations:
+      required: true
+  - type: textarea
+    id: proposed
+    attributes:
+      label: Suggested improvement
+  - type: checkboxes
+    id: contribution
+    attributes:
+      label: Contribution interest
+      options:
+        - label: I am willing to open a pull request for this improvement.

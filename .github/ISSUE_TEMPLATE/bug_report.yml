@@ -1,0 +1,69 @@
+name: Bug report
+description: Report reproducible incorrect behavior in the reviewer, report UI, exports, or operator console.
+title: "bug: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for helping improve ForkWise. Submit public repository evidence only. Remove credentials, private source, and personal data.
+  - type: input
+    id: repository
+    attributes:
+      label: Public repository URL
+      description: Use a public github.com URL when the issue depends on a repository.
+      placeholder: https://github.com/owner/repository
+  - type: input
+    id: commit
+    attributes:
+      label: Analyzed commit
+      description: Provide the 40-character SHA or the shortest SHA shown in the report.
+  - type: dropdown
+    id: surface
+    attributes:
+      label: Affected surface
+      options:
+        - Reviewer intake
+        - Analysis progress
+        - Report overview
+        - Findings or evidence
+        - Export
+        - Operator console
+        - Local runner or API
+        - Documentation
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Minimal reproduction
+      description: Include review intent and constraints when they affect the result.
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Browser, operating system, viewport, local/public site, and relevant version.
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Submission safety
+      options:
+        - label: I removed credentials, private repository content, personal data, and regulated data.
+          required: true
+        - label: I understand that security vulnerabilities must use private reporting.
+          required: true

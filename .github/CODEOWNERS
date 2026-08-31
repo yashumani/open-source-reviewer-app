@@ -1,0 +1,9 @@
+# Default ownership
+* @yashumani
+
+# Security, runner, persistence, and contracts
+/server/ @yashumani
+/supabase/ @yashumani
+/docs/api/ @yashumani
+/.github/workflows/ @yashumani
+/SECURITY.md @yashumani
