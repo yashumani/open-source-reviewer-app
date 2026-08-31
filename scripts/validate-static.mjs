@@ -47,6 +47,9 @@ function validateCss(source, label) {
   if (!/prefers-reduced-motion/.test(source)) errors.push(`${label} reduced-motion support is missing.`);
   if (!/overflow-x:\s*hidden/.test(source)) errors.push(`${label} global horizontal overflow protection is missing.`);
   if (!/\[hidden\]/.test(source)) errors.push(`${label} hidden-state rule is missing.`);
+  for (const token of ["--canvas-default", "--border-default", "--fg-default", "--accent", "--success", "--attention", "--danger"]) {
+    if (!source.includes(token)) errors.push(`${label} is missing repository semantic token ${token}.`);
+  }
 }
 
 async function validateImports(filePath) {
@@ -66,6 +69,14 @@ validateMarkup(html, "Reviewer");
 validateMarkup(operatorHtml, "Operator console");
 validateCss(css, "Reviewer CSS");
 validateCss(operatorCss, "Operator CSS");
+
+if (!/class=["'][^"']*repo-chrome/.test(html)) errors.push("Reviewer GitHub-native repository chrome is missing.");
+if (!/class=["'][^"']*repo-tabs/.test(html)) errors.push("Reviewer repository tab navigation is missing.");
+if (!/class=["'][^"']*readme-panel/.test(html)) errors.push("Reviewer README-style overview panel is missing.");
+if (!/class=["'][^"']*operator-repo-chrome/.test(operatorHtml)) errors.push("Operator repository chrome is missing.");
+if (!/class=["'][^"']*operator-tabs/.test(operatorHtml)) errors.push("Operator Actions-style tab navigation is missing.");
+if (/backdrop-filter\s*:/.test(css) || /backdrop-filter\s*:/.test(operatorCss)) errors.push("Repository redesign must not reintroduce glass-panel backdrop filters.");
+if (/radial-gradient\(/.test(css) || /radial-gradient\(/.test(operatorCss)) errors.push("Repository redesign must not reintroduce ambient radial-gradient marketing backgrounds.");
 
 const requiredIds = [
   "review-form", "repo-url", "use-case", "deployment-target", "sensitivity", "team-size", "external-services",
@@ -130,4 +141,4 @@ if (errors.length) {
   console.error(errors.map((error) => `- ${error}`).join("\n"));
   process.exit(1);
 }
-console.log(`Static validation passed: reviewer ${ids.length} IDs/${localRefs.length} assets; operator ${operatorIds.length} IDs/${operatorRefs.length} assets; dormant hosted mode, responsive/accessibility/security checks complete.`);
+console.log(`Static validation passed: reviewer ${ids.length} IDs/${localRefs.length} assets; operator ${operatorIds.length} IDs/${operatorRefs.length} assets; GitHub-native chrome, dormant hosted mode, responsive/accessibility/security checks complete.`);
