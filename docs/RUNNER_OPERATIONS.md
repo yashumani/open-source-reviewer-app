@@ -1,15 +1,17 @@
 # ForkWise Runner Operations Runbook
 
+> **Current release state:** the published service passes health/schema checks, but queued analysis does not yet execute in Lovable. The request-bound lease migration and handler pattern are prepared in GitHub and await a credit-enabled deployment. The public reviewer remains in browser-analysis mode.
+
 ## Service inventory
 
-| Surface | URL / location | Purpose |
-| --- | --- | --- |
-| Public reviewer | `https://yashumani.github.io/open-source-reviewer-app/` | Evidence-first browser review experience |
-| Operator console | `https://yashumani.github.io/open-source-reviewer-app/operator.html` | Health, recent workload, limits, and real API smoke test |
-| Hosted runner | `https://forkwise-runner.lovable.app` | Lovable Cloud application hosting the static-analysis API |
-| Public API base | `https://forkwise-runner.lovable.app/functions/v1/review-api` | Versioned review/job/report endpoints |
-| Lovable project | `eba70e78-93f1-43a5-ac32-f6f6facae256` | Deployment and PostgreSQL owner |
-| Source repository | `yashumani/open-source-reviewer-app` | Reviewer UI, operator console, client contract, local reference runner, tests, and docs |
+| Surface | URL / location | Purpose | Current status |
+| --- | --- | --- | --- |
+| Public reviewer | `https://yashumani.github.io/open-source-reviewer-app/` | Evidence-first browser review experience | Live |
+| Operator console | `https://yashumani.github.io/open-source-reviewer-app/operator.html` | Health, recent workload, limits, and API test UI | Live |
+| Hosted runner | `https://forkwise-runner.lovable.app` | Lovable Cloud application hosting the static-analysis API | Health live; lifecycle blocked |
+| Public API base | `https://forkwise-runner.lovable.app/functions/v1/review-api` | Versioned review/job/report endpoints | Health live; submitted jobs remain queued |
+| Lovable project | `eba70e78-93f1-43a5-ac32-f6f6facae256` | Deployment and PostgreSQL owner | Provisioned |
+| Source repository | `yashumani/open-source-reviewer-app` | Reviewer UI, operator console, reference runner, tests, SQL, docs | Source of truth |
 
 ## Health and status
 
@@ -31,6 +33,8 @@ Expected contract:
   "analyzerVersion": "forkwise-hosted/0.1.0"
 }
 ```
+
+GitHub Actions continuously verifies this health contract. It does not treat health as proof that the full analysis lifecycle works.
 
 ## Review lifecycle
 
@@ -74,6 +78,49 @@ GET /v1/reports/:id
 
 A completed job returns a `forkwise-report/v1` object. Pending jobs return `409`. Unknown or expired reports return `404`.
 
+## Current lifecycle incident
+
+### Symptom
+
+- `POST /v1/reviews` returns `202` and a durable job ID.
+- Repeated `GET /v1/jobs/:id` calls continue to return `queued`.
+- The full hosted smoke test times out without seeing `running` or `completed`.
+
+### Root cause
+
+The deployed serverless handler starts analysis with an unawaited background promise. The request ends before the platform guarantees completion of that promise. Polling repeats the same fire-and-forget pattern, so work is never durably claimed and awaited.
+
+### Prepared fix
+
+The repository contains:
+
+- `server/request-bound-runner.js` — tested reference behavior;
+- `tests/request-bound-runner.test.js` — concurrency, recovery, idempotency, and safety tests;
+- `supabase/migrations/20260831_request_bound_execution.sql` — service-role lease/claim/progress/completion functions;
+- `docs/HOSTED_RUNNER_HANDOFF.md` — exact deployment sequence.
+
+The beta bridge makes the first claimable status poll atomically claim the job, await bounded static analysis inside the request, and persist one report. A lease token prevents stale invocations from overwriting a newer result.
+
+## Request-bound lease model
+
+```text
+queued job
+   ↓ first status poll
+claim_analysis_job(job_id)
+   ├─ returns no row → another invocation owns the lease
+   └─ returns row + lease_token
+          ↓
+      await bounded static analysis
+          ↓
+      progress updates renew lease
+          ↓
+      complete_analysis_job(job_id, lease_token, report)
+          ↓
+      completed + exactly one report
+```
+
+If a request terminates, `lease_expires_at` permits a later poll to reclaim the job. Completion and failure operations require the matching token, so stale work cannot replace a newer terminal result.
+
 ## Static-only safety boundary
 
 The runner may:
@@ -98,7 +145,7 @@ A future runtime-verification product requires a separate sandbox, explicit auth
 
 ## Database controls
 
-Lovable Cloud provisions PostgreSQL through Supabase. The deployed migration creates:
+Lovable Cloud provisions PostgreSQL through Supabase. The existing database includes:
 
 - `public.analysis_jobs`
 - `public.analysis_reports`
@@ -107,7 +154,17 @@ Lovable Cloud provisions PostgreSQL through Supabase. The deployed migration cre
 
 Both tables have row-level security enabled. There are no `anon` or `authenticated` policies, so direct browser reads and writes are denied by default. The server-side service-role client is the only application path with table access.
 
-Indexes cover status, creation time, expiration, client request ID, idempotency, and client hash. Reports and jobs default to a seven-day anonymous retention period.
+The prepared migration adds:
+
+- `analysis_jobs.lease_token`
+- `analysis_jobs.lease_expires_at`
+- `analysis_jobs.attempt_count`
+- `claim_analysis_job(...)`
+- `update_analysis_progress(...)`
+- `complete_analysis_job(...)`
+- `fail_analysis_job(...)`
+
+These changes are **not yet deployed** to Lovable. Do not represent them as production-active until the database is queried after deployment and the hosted lifecycle test passes.
 
 ### Retention cleanup
 
@@ -121,9 +178,9 @@ The function removes expired reports and jobs. Monitor deletion counts and datab
 
 ## Free-beta limits
 
-| Control | Current value |
+| Control | Current target |
 | --- | ---: |
-| Request body | 8 KiB |
+| Request body | 8 KiB hosted / 32 KiB local reference |
 | Use-case text | 1,000 characters |
 | Recursive tree entries considered | 12,000 |
 | Text artifacts fetched | 24 |
@@ -135,6 +192,7 @@ The function removes expired reports and jobs. Monitor deletion counts and datab
 | Active jobs | 12 |
 | Idempotency replay | 30 minutes |
 | Anonymous retention | 7 days |
+| Request-bound lease | 60 seconds target |
 
 The in-memory limiter is a fast first layer. PostgreSQL-backed recent-job counts are the durable anonymous quota. Stronger authenticated quotas, organization policy, and cost controls are production gates.
 
@@ -154,15 +212,33 @@ Lovable Cloud supplies the Supabase URL, publishable key, and service-role secre
 
 Structured logs may contain job IDs, normalized repository keys, decisions, coverage, and error codes. They must not contain repository file contents, credentials, request secrets, or unredacted provider messages.
 
-## Operator smoke test
+## CI verification layers
+
+### Required on normal changes
+
+1. `Quality` — syntax, static validation, all deterministic tests, build.
+2. `Runner Contract and Hosted Health / Local request-bound lifecycle` — complete lifecycle against the deterministic local contract service.
+3. `Runner Contract and Hosted Health / Published runner health contract` — exact hosted health/schema/analyzer/static-only response.
+
+### Opt-in production gate
+
+`Runner Contract and Hosted Health / Published runner full lifecycle` runs only when:
+
+- a workflow dispatch selects `full_hosted_lifecycle`, or
+- repository variable `FORKWISE_HOSTED_LIFECYCLE_ENABLED=true`.
+
+Keep that variable unset until the Lovable execution deployment succeeds manually. After it passes, enable the variable so every `main` push continuously verifies the full lifecycle.
+
+## Operator smoke test after deployment
 
 1. Open `operator.html` from the deployed Pages site.
 2. Confirm the health badge reports Operational and the contract fields match this runbook.
 3. Submit the default small public repository.
-4. Confirm progress advances through a durable job rather than a mocked timer.
+4. Confirm progress advances `queued → running → completed` through a durable job.
 5. Confirm the result shows decision, confidence, coverage, dimensions, blockers, commit SHA, and generated time only.
 6. Confirm no evidence excerpts or complete report JSON are displayed.
 7. Refresh status and confirm the 24-hour counters reflect the job.
+8. Run the opt-in GitHub Actions lifecycle and record its run URL and release commit.
 
 ## Incident response
 
@@ -173,12 +249,19 @@ Structured logs may contain job IDs, normalized repository keys, decisions, cove
 - Review sanitized structured logs for configuration or upstream failures.
 - Do not expose service-role credentials while debugging.
 
-### Jobs remain queued or running
+### Jobs remain queued
 
-- Check the active-job count and analysis deadline.
-- Poll the job once to trigger lazy queued-job resumption.
-- Look for stale running jobs older than twice the analysis deadline.
-- Verify GitHub API availability and anonymous/token rate limits.
+- Confirm the request-bound migration and handler were actually deployed.
+- Verify `claim_analysis_job` exists and is executable by `service_role`.
+- Confirm the status handler awaits the claimed job rather than calling `void runJob(...)`.
+- Inspect sanitized logs for claim, GitHub rate-limit, timeout, and completion events.
+
+### Jobs remain running
+
+- Inspect `lease_expires_at` and `attempt_count`.
+- Confirm a poll after lease expiry can reclaim the job.
+- Verify progress updates renew the matching lease token.
+- Avoid manual status edits unless data integrity is understood.
 
 ### Elevated failures
 
@@ -199,9 +282,10 @@ Structured logs may contain job IDs, normalized repository keys, decisions, cove
 
 Before calling the runner generally available:
 
+- hosted request-bound lifecycle passing continuously;
 - authenticated identity and per-user/organization quotas;
 - a scheduled and monitored retention job;
-- durable worker orchestration rather than best-effort request-lifetime work;
+- durable worker orchestration rather than request-bound beta execution;
 - GitHub App authentication and upstream quota monitoring;
 - latency, failure, capacity, and database-size dashboards;
 - backup/restore and rollback drills;
