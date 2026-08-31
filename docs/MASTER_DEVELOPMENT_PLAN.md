@@ -1,7 +1,7 @@
 # Open Source Reviewer — Master Development Plan
 
 > **Purpose:** execution evidence for building, validating, releasing, and governing ForkWise. This is not the product-requirements document.  
-> **Plan version:** 1.6  
+> **Plan version:** 1.7  
 > **Working method:** feature branch → pull request → required checks → merge → Pages deploy  
 > **Last updated:** 2026-08-31
 
@@ -11,8 +11,6 @@
 - 🟡 Implemented or in validation
 - ✅ Complete with repository or deployment evidence
 - 🔴 Blocked by a known external, administrative, or release dependency
-
-A checkpoint is complete only when implementation, validation, documentation, and—when applicable—deployment evidence exist.
 
 ## Master execution board
 
@@ -54,7 +52,7 @@ A checkpoint is complete only when implementation, validation, documentation, an
 | 34 | Strong worker isolation | 🟡 | Hardened reference container; distributed worker remains |
 | 35 | Activate hosted runner in reviewer | 🔴 | Blocked by hosted lifecycle |
 | 36 | Production observability/operations | 🟡 | Console/runbooks/spec exist; live alerts/drills remain |
-| 37 | Security/privacy/legal readiness | 🟡 | Community policies exist; hosted approval remains |
+| 37 | Security/privacy/legal readiness | 🟡 | Community policies complete; hosted approval remains |
 | 38 | Production release gate | 🔴 | Hosted analysis is not complete |
 | 39 | Request-bound lease reference | ✅ | Lease runner and exact route prefixes |
 | 40 | Hosted database/handler handoff | ✅ | Migration and deployment guide |
@@ -67,76 +65,29 @@ A checkpoint is complete only when implementation, validation, documentation, an
 | 47 | Dormant hosted adapter/runtime | ✅ | Adapter tests; hosted mode statically off |
 | 48 | Workflow supply-chain hardening | ✅ | Immutable action SHAs and Dependabot |
 | 49 | Privacy/observability/go-live governance | ✅ | Drafts, specs, ADRs, checklist |
-| 50 | Credit-free readiness release | ✅ | All core workflows and Pages passed |
-| 51 | Apache-2.0 project licensing | 🟡 | LICENSE, NOTICE, package metadata, ADR; merge pending |
-| 52 | Community governance and policies | 🟡 | Code of Conduct, governance, support, privacy, terms, AUP; merge pending |
-| 53 | Structured contribution intake | 🟡 | CODEOWNERS, PR template, six issue forms; merge pending |
-| 54 | Community-readiness validation | 🟡 | Validator and regression tests; CI pending |
-| 55 | Crowdsourcing starter backlog | ⬜ | 10–15 scoped issues with acceptance criteria |
-| 56 | Repository metadata and main protection | 🔴 | Administrator settings; issue #11 and settings manifest |
-| 57 | ForkWise Community Preview release | 🟡 | Merge, Pages deploy, starter backlog, public release evidence |
+| 50 | Credit-free readiness release | ✅ | Core workflows and Pages passed |
+| 51 | Apache-2.0 project licensing | ✅ | LICENSE, NOTICE, package metadata, ADR, GitHub recognition |
+| 52 | Community governance and policies | ✅ | Conduct, governance, support, privacy, terms, AUP, security |
+| 53 | Structured contribution intake | ✅ | CODEOWNERS, PR template, six issue forms |
+| 54 | Community-readiness validation | ✅ | 23-file contract, 82 tests, Quality run 33445387103 |
+| 55 | Crowdsourcing starter backlog | ✅ | Twelve scoped issues #14–#25 |
+| 56 | Repository metadata and main protection | 🔴 | Administrator settings; issue #11 |
+| 57 | ForkWise Community Preview release | ✅ | Commit ae8db8a, Pages run 33445387099, release evidence |
 | 58 | Hosted beta and production GA | 🔴 | Issues #3–#5 and hosted release checklist |
 
-## Current architecture
+## Release tracks
 
-```text
-GitHub Pages reviewer
-   ├── active: bounded browser static analysis
-   └── dormant: hosted runtime selector (forced disabled)
-                         │
-                         ▼
-Published Lovable API shell
-   ├── liveness/schema: live
-   ├── PostgreSQL jobs/reports: provisioned
-   └── execution: blocked in deployed fire-and-forget handler
-                         │
-                         ▼
-Prepared beta bridge
-   ├── atomic lease claim
-   ├── bounded request-bound analysis
-   ├── progress lease renewal
-   ├── stale invocation protection
-   └── exactly one persisted report
-```
+### Community Preview — live
 
-## Current public release track
+The public browser reviewer, license, policies, issue forms, pull-request workflow, starter backlog, deterministic validation, and Pages deployment are complete. See [`COMMUNITY_READINESS_EVIDENCE.md`](COMMUNITY_READINESS_EVIDENCE.md).
 
-The community-preview track is separate from hosted production readiness.
+### Hosted beta — blocked
 
-### Community preview gate
+The Lovable handler must adopt the prepared lease-based request-bound implementation and pass the real hosted lifecycle before the reviewer can switch from browser analysis.
 
-Required:
+### General availability — not approved
 
-- public browser reviewer;
-- clear static-only and public-repository scope;
-- Apache-2.0 license;
-- contribution and conduct policies;
-- structured issue/PR intake;
-- security reporting path;
-- responsive and automated validation;
-- scoped starter issues;
-- preview limitations and policy links.
-
-### Hosted beta gate
-
-Required:
-
-- issue #3 migration and handler deployment;
-- real `queued → running → completed` lifecycle;
-- one commit-pinned `forkwise-report/v1` report;
-- continuous hosted lifecycle check;
-- issue #4 reviewer activation and error-state validation.
-
-### General availability gate
-
-Required:
-
-- authenticated identity and abuse controls;
-- durable workers and retries;
-- live observability and alerting;
-- retention scheduling, backup, restore, rollback, and incident drills;
-- implementation-matched privacy/legal approval;
-- protected release workflow and explicit owner approval.
+Identity, durable workers, operational metrics/alerts, retention scheduling, backup/restore, incident drills, implementation-matched legal/privacy approval, and protected release governance remain.
 
 ## Security boundary
 
@@ -148,11 +99,11 @@ Required:
 
 ## Current external and administrative blockers
 
-- Issue `#3`: credit-enabled Lovable request-bound deployment.
-- Issue `#4`: hosted reviewer activation after lifecycle success.
-- Issue `#5`: production hardening.
-- Issue `#11`: repository administrator must protect `main` and verify settings.
-- Repository About metadata, topics, Discussions, and private vulnerability reporting require administrator configuration described in `REPOSITORY_SETTINGS.md`.
+- Issue #3: credit-enabled Lovable request-bound deployment.
+- Issue #4: hosted reviewer activation after lifecycle success.
+- Issue #5: production hardening.
+- Issue #9: hosted privacy/retention/legal approval.
+- Issue #11: administrator must configure About metadata, private vulnerability reporting, merge preferences, and `main` protection.
 
 ## Evidence package for every future cycle
 

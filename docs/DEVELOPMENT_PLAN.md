@@ -1,105 +1,96 @@
 # Open Source Reviewer — Development Plan and Execution Log
 
-> **Status:** Community crowdsourcing-readiness implementation is on `feat/community-crowdsourcing-readiness`  
-> **Working method:** feature branch → pull request → GitHub Actions → merge → Pages deploy  
-> **Current checkpoint:** Steps 51–54 implemented; validation, starter issues, and administrator settings remain  
+> **Status:** ForkWise Community Preview release complete; administrator settings and hosted execution remain  
+> **Current version:** `0.9.0`  
+> **Release commit:** `ae8db8a2207c18116db1bc8fb49609354de837f9`  
 > **Last updated:** 2026-08-31
 
 The master execution board is maintained in [`MASTER_DEVELOPMENT_PLAN.md`](MASTER_DEVELOPMENT_PLAN.md).
 
-## Current objective
+## Completed cycle — Community crowdsourcing readiness
 
-Release ForkWise as a clearly labeled **Community Preview** for public product testing and scoped open-source contributions while keeping hosted analysis and production/general-availability claims behind their existing release gates.
+### Delivered
 
-## Development cycle — Community crowdsourcing readiness
+- Apache License 2.0, NOTICE, package metadata, and license ADR.
+- Contributor Covenant-based Code of Conduct.
+- Governance, maintainer, support, and DCO contributor workflow.
+- Community Preview Privacy Notice, Terms, and Acceptable Use Policy.
+- Actionable GitHub private vulnerability-reporting path and safe fallback.
+- CODEOWNERS and pull-request template.
+- Six structured issue forms and disabled blank issues.
+- Community readiness validator integrated into the standard validation gate.
+- Four community regression tests.
+- Version 0.9 README, changelog, master plan, release checklist, and evidence.
+- Twelve scoped starter issues #14–#25 with default GitHub contribution labels.
 
-### Implemented on the feature branch
+### Pull request and merge
 
-1. **License and attribution**
-   - Apache License 2.0.
-   - NOTICE.
-   - Package license metadata.
-   - License decision ADR.
-2. **Community governance**
-   - Contributor Covenant-based Code of Conduct.
-   - Governance and maintainer guides.
-   - Support policy.
-   - DCO commit sign-off process.
-3. **Preview policies**
-   - Privacy Notice describing browser-side GitHub API access.
-   - Community Preview Terms.
-   - Acceptable Use Policy.
-   - Actionable private security-reporting URL and safe fallback.
-4. **Contribution intake**
-   - CODEOWNERS.
-   - Pull-request template.
-   - Issue forms for bugs, features, analyzer rules, false positives, false negatives, and documentation.
-   - Blank issues disabled with security/support contact links.
-5. **Validation**
-   - `scripts/validate-community.mjs`.
-   - Community-readiness regression tests.
-   - `npm run check:community` integrated into `npm run validate`.
-6. **Release documentation**
-   - Community Preview guide.
-   - Repository settings manifest.
-   - Version `0.9.0` README and changelog.
-   - Corrected GitHub-native redesign status and production evidence.
-   - Separate community, hosted beta, and production checklists.
+- Pull request: `#13 — feat: prepare ForkWise for community crowdsourcing`
+- Pull-request head: `8a1d8a0185cf6ba33ebdd7ee599a6c9c2a7f07f2`
+- Squash merge: `ae8db8a2207c18116db1bc8fb49609354de837f9`
+- GitHub license detection: `Apache-2.0`
 
-### Validation gate
+### Validation
 
-Before merge:
+| Gate | Run | Result |
+| --- | ---: | :---: |
+| Pull-request Quality | `33445281965` | ✅ |
+| Main Quality | `33445387103` | ✅ |
+| Main Runner Contract and Hosted Health | `33445387096` | ✅ |
+| Main Database Contract | `33445387069` | ✅ |
+| Main Container Contract | `33445387066` | ✅ |
+| Main Pages Readiness and Deploy | `33445387099` | ✅ |
 
-- [ ] Quality workflow passes with the new community validator and tests.
-- [ ] Existing Visual Redesign workflow remains green.
-- [ ] Runner, database, and container contracts remain green.
-- [ ] Package version and Apache-2.0 metadata are consistent.
-- [ ] All issue forms render through GitHub.
-- [ ] No security or hosted-runtime boundary changes are introduced.
+Main Quality evidence:
 
-### Post-merge actions
+- 41 JavaScript files passed syntax checks;
+- reviewer/operator static, accessibility, responsive, and security contracts passed;
+- API and workflow contracts passed;
+- 23 community-readiness files and six issue forms passed;
+- 82 tests passed, 0 failed;
+- production build passed.
 
-- [ ] Verify all `main` workflows.
-- [ ] Verify Pages deployment.
-- [ ] Close issue #8 after confirming GitHub recognizes the license.
-- [ ] Update issue #9 with the published preview policies while keeping hosted legal approval open.
-- [ ] Create 10–15 scoped contributor issues.
-- [ ] Apply existing GitHub labels to the starter backlog.
-- [ ] Record the community-preview release commit and workflow IDs.
+Pages completed both build and deploy for the release commit.
 
-## Administrator-only repository settings
+### Issue governance
 
-The connected automation can read but cannot modify branch protection, About metadata, topics, Discussions, or private vulnerability reporting. The exact desired settings are in [`REPOSITORY_SETTINGS.md`](REPOSITORY_SETTINGS.md) and issue #11.
+- Issue #8 closed as completed after GitHub recognized Apache-2.0.
+- Issue #9 updated with the published browser-preview policies; remains open for hosted processing.
+- Issue #11 updated with the settings manifest and current administrator-only blockers.
 
-Required administrator actions:
+### Starter backlog
 
-1. Set repository description, website, and topics.
+See [`STARTER_ISSUES.md`](STARTER_ISSUES.md). The backlog covers synthetic fixtures, Compose detection, release provenance, README claims, accessibility, long-path responsiveness, confidence documentation, telemetry false positives, Python manifests, branch-protection observability, and contributor-template validation.
+
+## Remaining work that cannot be completed through the current GitHub integration
+
+A repository administrator must apply [`REPOSITORY_SETTINGS.md`](REPOSITORY_SETTINGS.md):
+
+1. Set the About description, Pages website, and topics.
 2. Enable private vulnerability reporting.
-3. Protect `main` with required pull-request checks.
-4. Block force pushes and branch deletion.
-5. Prefer squash merge and delete merged branches.
-6. Optionally enable Discussions after moderation ownership is confirmed.
+3. Prefer squash merge, allow branch updates, and delete merged branches.
+4. Protect `main` and require applicable Quality, runner, database, and container checks.
+5. Optionally enable Discussions after moderation ownership is confirmed.
 
-These settings do not block public product testing, but `main` protection and private vulnerability reporting should be completed before a broad contribution campaign.
+Current API evidence still shows description/homepage/topics unset and `main` unprotected.
 
-## Hosted development remains separate
+## Next hosted development cycle
 
-The next hosted product cycle remains issue #3:
+When Lovable credits are available, resume issue #3:
 
-1. apply the prepared database migration;
+1. apply the prepared request-bound migration;
 2. remove fire-and-forget execution;
-3. claim and await bounded analysis with a lease token;
-4. pass the full hosted lifecycle;
-5. activate the reviewer only through issue #4.
+3. atomically claim and await bounded analysis;
+4. complete with the matching lease token;
+5. pass the full hosted lifecycle;
+6. activate hosted mode only through issue #4.
 
-No community-readiness change enables hosted mode or weakens the static-only boundary.
+## Release judgment
 
-## Decision log additions
-
-| Date | Decision | Reason |
-| --- | --- | --- |
-| 2026-08-31 | Use Apache License 2.0 | Commercially permissive developer-tool license with an explicit patent grant. |
-| 2026-08-31 | Use DCO sign-off rather than a CLA during preview | Lower contributor friction while preserving contribution provenance. |
-| 2026-08-31 | Separate community preview from hosted beta and GA | Public feedback can begin without overstating the blocked hosted lifecycle. |
-| 2026-08-31 | Use structured issue forms | Improve reproductions, evidence quality, and contributor routing. |
-| 2026-08-31 | Keep administrator settings as an explicit manifest | Source automation cannot safely or currently change those repository controls. |
+```text
+Community product testing:        GO
+Scoped open-source contributions: GO
+Hosted analysis beta:             WAITING FOR ISSUE #3
+Production/general availability:  NOT APPROVED
+Repository admin hardening:       OWNER ACTION IN ISSUE #11
+```
