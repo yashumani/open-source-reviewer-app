@@ -2,7 +2,7 @@
 
 > **Purpose:** execution evidence for building, validating, deploying, and maturing ForkWise. This is not the product-requirements document.
 >
-> **Plan version:** 1.4  
+> **Plan version:** 1.5  
 > **Working method:** feature branch → pull request → validated merge to `main`  
 > **Last updated:** 2026-08-31
 
@@ -52,23 +52,23 @@ A checkpoint is complete only when implementation, validation, and documentation
 | 31 | Backend hosting provisioned | ✅ | Published Lovable service shell |
 | 32 | Hosted datastore baseline | ✅ | PostgreSQL jobs/reports, RLS, indexes, retention function |
 | 33 | Authentication, quotas and abuse controls | 🟡 | Anonymous controls exist; authenticated identity/quotas remain |
-| 34 | Strong worker isolation | 🟡 | Non-root read-only container reference prepared; production distributed worker remains |
+| 34 | Strong worker isolation | 🟡 | Non-root read-only container reference validated; production distributed worker remains |
 | 35 | Activate runner mode in live reviewer | 🔴 | Blocked until hosted job lifecycle passes |
 | 36 | Production observability and operations | 🟡 | Console, runbooks and specification exist; live metrics/alerts/restore drill remain |
-| 37 | Security/privacy/legal readiness | 🟡 | Security model and privacy draft exist; approvals/terms/license remain |
+| 37 | Security/privacy/legal readiness | 🟡 | Security model and privacy draft exist; issues #8 and #9 track approvals/license |
 | 38 | Production release gate | 🔴 | Hosted jobs remain queued; no go-live approval |
 | 39 | Request-bound lease reference implementation | ✅ | Lease runner, stores and exact route-prefix API |
 | 40 | Hosted database/handler handoff package | ✅ | Production lease migration + handoff |
 | 41 | Layered runner CI gates | ✅ | Local lifecycle, published health, opt-in hosted lifecycle |
-| 42 | Deploy request-bound execution to Lovable | 🔴 | Credit-dependent migration and handler deployment |
-| 43 | Hosted lifecycle verification and UI activation | ⬜ | Full smoke, operator validation, Pages integration |
-| 44 | Formal API and report contracts | 🟡 | OpenAPI 3.1 + request/job/report JSON Schemas; CI evidence pending |
-| 45 | Executable PostgreSQL contract | 🟡 | Clean baseline + migration/RLS/lease/idempotency tests; CI pending |
-| 46 | Hardened hosting-neutral container | 🟡 | Non-root/read-only/cap-drop lifecycle workflow; CI pending |
-| 47 | Dormant hosted report adapter/runtime | 🟡 | Adapter/runtime tests; static gate keeps hosted disabled; CI pending |
-| 48 | Workflow supply-chain hardening | 🟡 | Immutable action SHAs, validation script, Dependabot; CI pending |
-| 49 | Privacy, observability and go-live governance | ✅ | Draft notice, metrics/alert spec, ADRs, release checklist |
-| 50 | Credit-free readiness release | 🟡 | Quality + runner + database + container + Pages evidence required |
+| 42 | Deploy request-bound execution to Lovable | 🔴 | Credit-dependent migration and handler deployment; issue #3 |
+| 43 | Hosted lifecycle verification and UI activation | ⬜ | Full smoke, operator validation, Pages integration; issue #4 |
+| 44 | Formal API and report contracts | ✅ | OpenAPI 3.1, three JSON Schemas, contract validator/tests |
+| 45 | Executable PostgreSQL contract | ✅ | PostgreSQL 16 CI verifies schema, RLS, leases, idempotency and retention |
+| 46 | Hardened hosting-neutral container | ✅ | Non-root/read-only/cap-drop lifecycle workflow passed |
+| 47 | Dormant hosted report adapter/runtime | ✅ | Adapter/runtime tests passed; static gate keeps hosted disabled |
+| 48 | Workflow supply-chain hardening | ✅ | Immutable action SHAs, validation script and Dependabot |
+| 49 | Privacy, observability and go-live governance | ✅ | Draft notice, metric/alert spec, ADRs, release checklist and tracked approvals |
+| 50 | Credit-free readiness release | ✅ | Merge commit and all five `main` workflows passed; Pages redeployed |
 
 ## Current architecture
 
@@ -84,7 +84,7 @@ Published Lovable API shell
    └── execution: blocked in deployed fire-and-forget handler
                          │
                          ▼
-Prepared beta bridge
+Prepared beta bridge in GitHub
    ├── atomic PostgreSQL lease claim
    ├── first claimable poll awaits bounded analysis
    ├── progress renews lease
@@ -92,9 +92,35 @@ Prepared beta bridge
    └── completion persists exactly one report
 ```
 
-## Credit-free readiness cycle — Steps 44–50
+## Credit-free readiness release evidence — Steps 44–50
 
-This cycle intentionally uses no Lovable credits.
+### Repository delivery
+
+- Pull request: `#6 — feat: complete credit-free production readiness`
+- Merge commit: `252af76c3984e67543971a0894a93d3fa64b3357`
+- Release version in `package.json`: `0.7.0`
+
+### Main-branch GitHub Actions
+
+| Gate | Run | Result | Evidence |
+| --- | ---: | :---: | --- |
+| Quality | `33425078383` / #26 | ✅ | 39 JavaScript files; reviewer/operator/static-hosted checks; 4 API documents; 5 paths; 16 immutable Action pins; **78 tests passed, 0 failed**; production build passed |
+| Runner Contract and Hosted Health | `33425078295` / #6 | ✅ | Deterministic request-bound lifecycle passed; published hosted health passed; full hosted lifecycle skipped intentionally |
+| Database Contract | `33425078323` / #2 | ✅ | PostgreSQL baseline + lease migrations; RLS; privileges; atomic claims; lease renewal; idempotent completion; one report; retention cleanup |
+| Container Contract | `33425078288` / #2 | ✅ | Image built; unprivileged `node`; read-only root; capabilities dropped; no-new-privileges; exact-prefix deterministic lifecycle passed |
+| Pages Readiness and Deploy | `33425078343` / #20 | ✅ | Validation/build, artifact upload and `deploy-pages` all succeeded for the merge commit |
+
+Live reviewer remains:
+
+```text
+https://yashumani.github.io/open-source-reviewer-app/
+```
+
+Live operator console remains:
+
+```text
+https://yashumani.github.io/open-source-reviewer-app/operator.html
+```
 
 ### Formal contracts
 
@@ -132,7 +158,9 @@ The contract fixes endpoint names, request context, job states, `forkwise-report
 - External GitHub Actions are pinned by immutable 40-character SHAs.
 - `scripts/validate-workflows.mjs` enforces pins, permissions and timeouts.
 - Dependabot tracks Action and Docker updates.
-- Privacy/data-handling, observability, container operations, ADRs, changelog and go-live checklist are repository artifacts.
+- Privacy/data handling, observability, container operations, ADRs, changelog and go-live checklist are repository artifacts.
+- Issue `#8` tracks the owner-approved project-license decision.
+- Issue `#9` tracks privacy, terms, retention and acceptable-use approval.
 
 ## Security boundary
 
@@ -153,7 +181,15 @@ The Lovable production handler still starts unawaited analysis after returning a
 5. the operator console observes a completed job;
 6. the public reviewer is switched and responsive/error states are revalidated.
 
-## Evidence package required for every cycle
+Tracked sequence:
+
+- issue `#3`: deploy request-bound execution to Lovable;
+- issue `#4`: activate hosted runner mode after lifecycle passes;
+- issue `#5`: post-beta production hardening;
+- issue `#8`: choose/add project license;
+- issue `#9`: approve privacy/terms/retention/acceptable-use materials.
+
+## Evidence package required for every future cycle
 
 1. Commit SHA and files changed.
 2. Automated test commands and passed/failed counts.
