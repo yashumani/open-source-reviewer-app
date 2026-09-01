@@ -24,11 +24,12 @@ test("documented placeholders and explicit CI or local defaults are not critical
     { path: ".github/workflows/database-contract.yml", content: "POSTGRES_PASSWORD: forkwise-test" },
     { path: "docker-compose.local.yml", content: "POSTGRES_PASSWORD: talk2data-local-only" },
     { path: ".github/workflows/ci.yml", content: "UKB_POSTGRES_PASSWORD: ci-only-password" },
+    { path: ".github/workflows/talk2data-operations.yml", content: "OPENAI_API_KEY: graphiti-smoke-not-used" },
     { path: ".env.example", content: "API_KEY=sk-proj-xxxxxxxxxxxxxxxxxxxxxxxx" },
   ]);
 
   assert.equal(result.exposed.length, 0);
-  assert.ok(result.defaults.length >= 4);
+  assert.ok(result.defaults.length >= 5);
 });
 
 test("high-confidence structured tokens remain exposed even in ordinary text", () => {
@@ -60,6 +61,7 @@ test("placeholder and reference classifiers cover common explicit forms", () => 
   assert.equal(isCredentialReference("${TOKEN}"), true);
   assert.equal(isCredentialReference("<your-api-key>"), true);
   assert.equal(isCredentialPlaceholder("forkwise-test"), true);
+  assert.equal(isCredentialPlaceholder("graphiti-smoke-not-used"), true);
   assert.equal(isCredentialPlaceholder("sk-proj-xxxxxxxxxxxxxxxxxxxx"), true);
   assert.equal(isCredentialPlaceholder("A1b2C3d4E5f6G7h8"), false);
 });
