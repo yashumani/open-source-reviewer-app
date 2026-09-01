@@ -39,6 +39,7 @@
     "test:hosted-adapter": "node --test tests/hosted-report-adapter.test.js tests/api-contract.test.js",
     "smoke:runner:health": "FORKWISE_SMOKE_MODE=health node scripts/smoke-runner.mjs",
     "smoke:runner:lifecycle": "node scripts/smoke-runner.mjs",
+    "calibrate:owner": "node scripts/calibrate-owner-repositories.mjs",
     "validate:ui": "python3 scripts/ui_redesign_validation.py",
     "build": "node scripts/build.mjs",
     "validate": "npm run check && npm test && npm run build"

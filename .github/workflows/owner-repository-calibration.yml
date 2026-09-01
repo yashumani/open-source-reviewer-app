@@ -1,0 +1,63 @@
+name: Owner Repository Calibration
+
+on:
+  workflow_dispatch:
+    inputs:
+      owner:
+        description: Public GitHub account whose owned repositories should be calibrated
+        required: false
+        default: yashumani
+        type: string
+  push:
+    branches: [main]
+    paths:
+      - "src/analyzer.js"
+      - "src/calibration.js"
+      - "src/github.js"
+      - "src/inventory.js"
+      - "src/schema.js"
+      - "scripts/calibrate-owner-repositories.mjs"
+      - "tests/calibration.test.js"
+      - ".github/workflows/owner-repository-calibration.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  calibrate-public-owner-repositories:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      FORKWISE_CALIBRATION_OWNER: ${{ inputs.owner || 'yashumani' }}
+      FORKWISE_CALIBRATION_DIR: validation/owner-repository-calibration
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 24
+
+      - name: Validate ForkWise before calibration
+        run: npm run validate
+
+      - name: Run all public owner repositories through ForkWise
+        run: npm run calibrate:owner
+
+      - name: Publish calibration summary in the workflow
+        if: always()
+        run: |
+          if [ -f validation/owner-repository-calibration/owner-repository-calibration.md ]; then
+            cat validation/owner-repository-calibration/owner-repository-calibration.md >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Upload complete calibration evidence
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v4
+        with:
+          name: owner-repository-calibration-${{ github.run_id }}
+          path: validation/owner-repository-calibration/
+          if-no-files-found: warn
+          retention-days: 30
