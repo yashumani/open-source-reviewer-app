@@ -18,7 +18,7 @@ const REFERENCE_PATTERNS = [
   /^(?:secrets?|vars?)\.[A-Z_][A-Z0-9_]*$/i,
 ];
 
-const PLACEHOLDER_TOKEN = /(?:^|[-_.:/])(?:your|example|sample|placeholder|dummy|fake|mock|test|testing|local|localonly|local-only|ci|cionly|ci-only|dev|development|changeme|change-me|replace|replace-me|redacted|notasecret|not-a-secret|unset)(?:[-_.:/]|$)/i;
+const PLACEHOLDER_TOKEN = /(?:^|[-_.:/])(?:your|example|sample|placeholder|dummy|fake|mock|test|testing|smoke|local|localonly|local-only|ci|cionly|ci-only|dev|development|changeme|change-me|replace|replace-me|redacted|notasecret|not-a-secret|notused|not-used|unused|unset)(?:[-_.:/]|$)/i;
 const EXACT_PLACEHOLDERS = new Set([
   "password",
   "secret",

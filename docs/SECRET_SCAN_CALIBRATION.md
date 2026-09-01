@@ -1,10 +1,10 @@
 # Credential Signal Calibration
 
-> Analyzer change: `0.3.1`  
+> Analyzer change: `0.3.2`  
 > Scope: bounded static inspection of selected repository text  
 > Security posture: preserve high-confidence secret blocking while reducing placeholder and test-credential false positives
 
-## Problem found by owner-wide calibration
+## Problems found by owner-wide calibration
 
 The first owner-repository calibration run completed 15 non-empty public repositories and reproduced ForkWise's self-review failure. ForkWise returned `Avoid` for its own repository because the generic assignment matcher interpreted this disposable PostgreSQL CI value as exposed credential material:
 
@@ -12,7 +12,15 @@ The first owner-repository calibration run completed 15 non-empty public reposit
 POSTGRES_PASSWORD: forkwise-test
 ```
 
-The same broad pattern also treated README placeholders, environment-variable references, explicit local-only database defaults, and CI-only passwords as equivalent to high-confidence provider tokens.
+The first fix changed ForkWise's self-review from `Avoid` to `Pilot`, then a second complete owner run exposed one remaining false positive in `unified-knowledge-base`:
+
+```yaml
+OPENAI_API_KEY: graphiti-smoke-not-used
+```
+
+That value exists only to satisfy a CI smoke-test interface while the model provider is disabled. It is explicitly marked `smoke` and `not-used`, so analyzer `0.3.2` recognizes those terms as placeholder evidence rather than a leaked OpenAI credential.
+
+The former broad pattern also treated README placeholders, environment-variable references, explicit local-only database defaults, and CI-only passwords as equivalent to high-confidence provider tokens.
 
 That conflated two different risks:
 
@@ -55,10 +63,11 @@ Examples:
 forkwise-test
 talk2data-local-only
 ci-only-password
+graphiti-smoke-not-used
 sk-proj-xxxxxxxxxxxxxxxx
 ```
 
-Explicit test, CI, local, sample, dummy, fake, redacted, or replacement values are excluded from the critical secret rule.
+Explicit test, smoke, unused, CI, local, sample, dummy, fake, redacted, or replacement values are excluded from the critical secret rule.
 
 ### Literal development/default credential
 
@@ -70,6 +79,7 @@ The deterministic suite verifies that:
 
 - test service passwords do not turn a healthy repository into `Avoid`;
 - README API-key placeholders do not create credential findings;
+- smoke-test keys explicitly marked unused do not create credential findings;
 - environment references in production Compose files do not create credential findings;
 - actual high-confidence tokens remain critical and blocking;
 - complete report serialization continues to redact detected values;
