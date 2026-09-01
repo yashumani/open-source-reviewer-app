@@ -71,3 +71,8 @@ The analyzer does not claim to prove:
 - legal license compatibility;
 - maintainer intent or future responsiveness;
 - production readiness based solely on file presence.
+
+## Credential candidate classification
+
+The critical `potential-secret` rule is reserved for high-confidence structured tokens, high-entropy credential literals, and literal production/deployment credentials. Environment references, secret-store expressions, explicit placeholders, CI-only values, and local-only examples are not evidence of an exposed external credential. Ambiguous literal defaults can be surfaced separately for deployment review. See [`SECRET_SCAN_CALIBRATION.md`](SECRET_SCAN_CALIBRATION.md).
+

@@ -11,6 +11,7 @@ import {
   validateAssessment,
 } from "./schema.js";
 import { buildArtifactInventory, countExtensions, inventorySummary } from "./inventory.js";
+import { scanCredentialCandidates } from "./secret-scanner.js";
 
 const DAY = 86_400_000;
 const MAX_EXCERPT = 240;
@@ -50,15 +51,6 @@ const TECHNOLOGIES = [
   { name: "Redis", category: "data service", path: /(^|\/)(compose|docker-compose)[^/]*\.ya?ml$/i, content: /\b(redis|REDIS_URL)\b/i },
   { name: "Docker", category: "deployment", path: /(^|\/)dockerfile|(^|\/)(docker-)?compose/i, content: /\bdocker\b/i },
   { name: "Kubernetes", category: "deployment", path: /(^|\/)(k8s|kubernetes|charts?)\//i, content: /\b(apiVersion:|kind:\s*(Deployment|StatefulSet|Service))\b/i },
-];
-
-const SECRET_SCAN_PATTERNS = [
-  /\bgh[pousr]_[A-Za-z0-9]{20,255}\b/,
-  /\bgithub_pat_[A-Za-z0-9_]{20,255}\b/,
-  /\bsk-(?:proj-)?[A-Za-z0-9_-]{16,255}\b/,
-  /\bAKIA[0-9A-Z]{16}\b/,
-  /\bxox[baprs]-[A-Za-z0-9-]{10,255}\b/,
-  /(?:api[_-]?key|access[_-]?token|auth[_-]?token|client[_-]?secret|password)\s*[:=]\s*["']?[^\s"'`]{8,}/i,
 ];
 
 function excerptAround(content, pattern) {
@@ -652,21 +644,13 @@ export function analyzeRepository(snapshot, rawContext = {}) {
     });
   }
 
-  const secretMatches = [];
-  for (const item of corpus) {
-    for (const pattern of SECRET_SCAN_PATTERNS) {
-      const match = item.content.match(pattern);
-      if (!match) continue;
-      secretMatches.push({ item, match: match[0] });
-      break;
-    }
-  }
-  if (secretMatches.length) {
-    const evidenceIds = secretMatches.slice(0, 5).map(({ item, match }) => fileEvidence(
-      item.path,
-      "Potential secret pattern",
-      "A high-risk credential-like pattern was found; the value is intentionally redacted.",
-      redactSensitiveText(match),
+  const credentialCandidates = scanCredentialCandidates(corpus);
+  if (credentialCandidates.exposed.length) {
+    const evidenceIds = credentialCandidates.exposed.slice(0, 5).map((candidate) => fileEvidence(
+      candidate.path,
+      `Potential ${candidate.kind.toLowerCase()}`,
+      "A high-confidence credential-like literal was found; the value is intentionally redacted.",
+      redactSensitiveText(candidate.match),
     ));
     addFinding({
       ruleId: "potential-secret",
@@ -674,11 +658,35 @@ export function analyzeRepository(snapshot, rawContext = {}) {
       type: "risk",
       severity: "critical",
       title: "Potential credential material was detected",
-      summary: `${secretMatches.length} inspected file${secretMatches.length === 1 ? "" : "s"} contained a high-risk credential-like pattern. Values are redacted.`,
+      summary: `${credentialCandidates.exposed.length} high-confidence credential-like literal${credentialCandidates.exposed.length === 1 ? " was" : "s were"} found. Environment references, placeholders, documentation examples, and explicit CI/local-only defaults are excluded. Values are redacted.`,
       impact: "Exposed credentials can enable unauthorized access even after the file is removed because Git history may retain them.",
       recommendation: "Treat the credential as compromised, rotate/revoke it, inspect history, and verify downstream access logs.",
       evidenceIds,
       blocking: true,
+    });
+  }
+
+  const literalDefaults = credentialCandidates.defaults.filter((candidate) =>
+    ["development-default", "literal-default"].includes(candidate.disposition),
+  );
+  if (literalDefaults.length) {
+    const evidenceIds = literalDefaults.slice(0, 5).map((candidate) => fileEvidence(
+      candidate.path,
+      "Literal development credential",
+      "A non-secret literal credential default was observed. It is not treated as exposed credential material, but deployments should override it outside bounded development environments.",
+      redactSensitiveText(candidate.match),
+    ));
+    addFinding({
+      ruleId: "literal-development-credential",
+      dimension: "Trust",
+      type: "unknown",
+      severity: "low",
+      title: "Literal development credential defaults need deployment review",
+      summary: `${literalDefaults.length} test, local, or low-entropy credential default${literalDefaults.length === 1 ? " was" : "s were"} observed.`,
+      impact: "A documented local default is not evidence of a leaked secret, but reusing it in a reachable deployment can weaken access control.",
+      recommendation: "Keep defaults limited to disposable local/test environments and require injected credentials for shared or production deployments.",
+      evidenceIds,
+      blocking: false,
     });
   }
 

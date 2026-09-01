@@ -4,7 +4,10 @@ All notable changes are recorded here. ForkWise remains a community preview; int
 
 ## Unreleased
 
-No unreleased changes recorded.
+### Fixed
+
+- Calibrated credential scanning so environment references, README placeholders, CI test passwords, and explicit local-only defaults no longer create critical exposed-secret findings. High-confidence literal tokens remain critical, blocking, and redacted.
+- Added an owner-wide public repository calibration gate with a ForkWise self-review regression check.
 
 ## 0.9.0 — 2026-08-31
 
