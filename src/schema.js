@@ -1,4 +1,4 @@
-export const ANALYZER_VERSION = "0.3.0";
+export const ANALYZER_VERSION = "0.3.1";
 export const REPORT_SCHEMA_VERSION = "forkwise-report/v1";
 export const DECISIONS = Object.freeze(["Adopt", "Pilot", "Fork", "Avoid", "Insufficient evidence"]);
 export const DIMENSIONS = Object.freeze(["Fit", "Trust", "Run", "Own", "Exit"]);
