@@ -154,7 +154,27 @@ def validate_reviewer(browser: Browser, base_url: str, name: str, width: int, he
     assert report["decisionBorder"] not in {"0px", ""}, report
     assert focus["outlineStyle"] != "none" and focus["outlineWidth"] != "0px", focus
     assert not errors, errors
+    # --- START OF ISSUE #19 ACCESSIBILITY TESTS ---
+    search_input = page.locator("#findings-search")
+    sr_announcer = page.locator("#sr-result-count")
 
+    # 1. Verify Keyboard Navigation
+    search_input.focus()
+    page.keyboard.press("Tab")
+    assert page.evaluate("document.activeElement.id") == "dimension-filter", "Tab navigation to dimension failed"
+    page.keyboard.press("Tab")
+    assert page.evaluate("document.activeElement.id") == "severity-filter", "Tab navigation to severity failed"
+
+    # 2. Verify Screen Reader Empty State
+    search_input.fill("this_will_return_zero_results_12345")
+    assert "No results found" in sr_announcer.text_content(), "Screen reader empty state failed"
+
+    # 3. Verify Screen Reader Results State
+    search_input.fill("")
+    assert "results found" in sr_announcer.text_content(), "Screen reader count state failed"
+    assert "No results" not in sr_announcer.text_content(), "Screen reader text should clear empty message"
+    # --- END OF ISSUE #19 ACCESSIBILITY TESTS ---
+    
     page.close()
     return {
         "surface": "reviewer",
