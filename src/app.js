@@ -279,6 +279,18 @@ function filterFindings() {
   } else if (count && empty) {
     empty.remove();
   }
+  updateResultCount(count);
+}
+
+function updateResultCount(count) {
+    const srAnnouncer = document.getElementById('sr-result-count');
+    if (!srAnnouncer) return;
+    
+    if (count === 0) {
+        srAnnouncer.textContent = "No results found. Adjust filters to try again.";
+    } else {
+        srAnnouncer.textContent = `${count} results found.`;
+    }
 }
 
 function renderOperations(assessment) {
