@@ -1,98 +1,519 @@
 {
-  "validatedAt": "2026-08-31T19:24:09.084737+00:00",
+  "validatedAt": "2026-11-08T07:05:42.423969+00:00",
   "browserExecutable": "/usr/bin/google-chrome",
   "result": "passed",
   "design": "github-native-repository-workspace",
-  "workflowRunId": 33430305189,
-  "artifactId": 9772329835,
-  "commitSha": "f131c13efe78fed33c8e02341c4e43e617d3b19e",
-  "viewports": [
+  "results": [
     {
       "surface": "reviewer",
       "name": "desktop",
-      "width": 1440,
-      "height": 1000,
-      "overflow": 0,
-      "decision": "Pilot",
-      "dimensions": 5,
-      "findings": 18,
-      "evidence": 21,
-      "claims": 6,
-      "consoleErrors": 0
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "layout": {
+        "innerWidth": 1440,
+        "documentWidth": 1440,
+        "bodyWidth": 1440,
+        "overflow": 0,
+        "bodyBackground": "rgb(255, 255, 255)",
+        "glassBackdrop": "none",
+        "repositoryTabs": 4,
+        "scrollY": 0
+      },
+      "report": {
+        "decision": "Pilot",
+        "dimensions": 5,
+        "findings": 18,
+        "evidence": 21,
+        "claims": 6,
+        "sidebarVisible": true,
+        "decisionBorder": "4px"
+      },
+      "focus": {
+        "tag": "A",
+        "id": "",
+        "outlineStyle": "solid",
+        "outlineWidth": "2px"
+      },
+      "filterKeyboard": {
+        "focus": [
+          {
+            "id": "findings-search",
+            "outlineStyle": "solid",
+            "outlineWidth": "2px",
+            "outlineColor": "rgb(9, 105, 218)",
+            "accent": "rgb(9, 105, 218)",
+            "background": "rgb(255, 255, 255)",
+            "contrast": 5.19
+          },
+          {
+            "id": "dimension-filter",
+            "outlineStyle": "solid",
+            "outlineWidth": "2px",
+            "outlineColor": "rgb(9, 105, 218)",
+            "accent": "rgb(9, 105, 218)",
+            "background": "rgb(255, 255, 255)",
+            "contrast": 5.19
+          },
+          {
+            "id": "severity-filter",
+            "outlineStyle": "solid",
+            "outlineWidth": "2px",
+            "outlineColor": "rgb(9, 105, 218)",
+            "accent": "rgb(9, 105, 218)",
+            "background": "rgb(255, 255, 255)",
+            "contrast": 5.19
+          }
+        ],
+        "totalFindings": 18,
+        "noMatch": {
+          "count": 0,
+          "emptyText": "No findings match the active filters."
+        },
+        "byDimension": {
+          "dimension": "Fit",
+          "count": 1
+        },
+        "narrowed": {
+          "dimension": "Fit",
+          "severity": "critical",
+          "count": 0
+        },
+        "cleared": {
+          "count": 18,
+          "emptyVisible": false
+        }
+      },
+      "stickyHeader": {
+        "scrollY": 500,
+        "top": 0,
+        "position": "sticky",
+        "htmlOverflowX": "visible",
+        "bodyOverflowX": "hidden"
+      },
+      "consoleErrors": [],
+      "screenshots": {
+        "landing": "docs/screenshots/github-native-reviewer-landing-desktop.png",
+        "report": "docs/screenshots/github-native-reviewer-report-desktop.png"
+      }
     },
     {
       "surface": "reviewer",
       "name": "tablet",
-      "width": 768,
-      "height": 1024,
-      "overflow": 0,
-      "decision": "Pilot",
-      "dimensions": 5,
-      "findings": 18,
-      "evidence": 21,
-      "claims": 6,
-      "consoleErrors": 0
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "layout": {
+        "innerWidth": 768,
+        "documentWidth": 768,
+        "bodyWidth": 768,
+        "overflow": 0,
+        "bodyBackground": "rgb(255, 255, 255)",
+        "glassBackdrop": "none",
+        "repositoryTabs": 4,
+        "scrollY": 0
+      },
+      "report": {
+        "decision": "Pilot",
+        "dimensions": 5,
+        "findings": 18,
+        "evidence": 21,
+        "claims": 6,
+        "sidebarVisible": true,
+        "decisionBorder": "4px"
+      },
+      "focus": {
+        "tag": "A",
+        "id": "",
+        "outlineStyle": "solid",
+        "outlineWidth": "2px"
+      },
+      "filterKeyboard": {
+        "focus": [
+          {
+            "id": "findings-search",
+            "outlineStyle": "solid",
+            "outlineWidth": "2px",
+            "outlineColor": "rgb(9, 105, 218)",
+            "accent": "rgb(9, 105, 218)",
+            "background": "rgb(255, 255, 255)",
+            "contrast": 5.19
+          },
+          {
+            "id": "dimension-filter",
+            "outlineStyle": "solid",
+            "outlineWidth": "2px",
+            "outlineColor": "rgb(9, 105, 218)",
+            "accent": "rgb(9, 105, 218)",
+            "background": "rgb(255, 255, 255)",
+            "contrast": 5.19
+          },
+          {
+            "id": "severity-filter",
+            "outlineStyle": "solid",
+            "outlineWidth": "2px",
+            "outlineColor": "rgb(9, 105, 218)",
+            "accent": "rgb(9, 105, 218)",
+            "background": "rgb(255, 255, 255)",
+            "contrast": 5.19
+          }
+        ],
+        "totalFindings": 18,
+        "noMatch": {
+          "count": 0,
+          "emptyText": "No findings match the active filters."
+        },
+        "byDimension": {
+          "dimension": "Fit",
+          "count": 1
+        },
+        "narrowed": {
+          "dimension": "Fit",
+          "severity": "critical",
+          "count": 0
+        },
+        "cleared": {
+          "count": 18,
+          "emptyVisible": false
+        }
+      },
+      "stickyHeader": {
+        "scrollY": 500,
+        "top": 0,
+        "position": "sticky",
+        "htmlOverflowX": "visible",
+        "bodyOverflowX": "hidden"
+      },
+      "consoleErrors": [],
+      "screenshots": {
+        "landing": null,
+        "report": "docs/screenshots/github-native-reviewer-report-tablet.png"
+      }
     },
     {
       "surface": "reviewer",
       "name": "mobile",
-      "width": 390,
-      "height": 844,
-      "overflow": 0,
-      "decision": "Pilot",
-      "dimensions": 5,
-      "findings": 18,
-      "evidence": 21,
-      "claims": 6,
-      "consoleErrors": 0
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "layout": {
+        "innerWidth": 390,
+        "documentWidth": 390,
+        "bodyWidth": 390,
+        "overflow": 0,
+        "bodyBackground": "rgb(255, 255, 255)",
+        "glassBackdrop": "none",
+        "repositoryTabs": 4,
+        "scrollY": 0
+      },
+      "report": {
+        "decision": "Pilot",
+        "dimensions": 5,
+        "findings": 18,
+        "evidence": 21,
+        "claims": 6,
+        "sidebarVisible": true,
+        "decisionBorder": "4px"
+      },
+      "focus": {
+        "tag": "A",
+        "id": "",
+        "outlineStyle": "solid",
+        "outlineWidth": "2px"
+      },
+      "filterKeyboard": {
+        "focus": [
+          {
+            "id": "findings-search",
+            "outlineStyle": "solid",
+            "outlineWidth": "2px",
+            "outlineColor": "rgb(9, 105, 218)",
+            "accent": "rgb(9, 105, 218)",
+            "background": "rgb(255, 255, 255)",
+            "contrast": 5.19
+          },
+          {
+            "id": "dimension-filter",
+            "outlineStyle": "solid",
+            "outlineWidth": "2px",
+            "outlineColor": "rgb(9, 105, 218)",
+            "accent": "rgb(9, 105, 218)",
+            "background": "rgb(255, 255, 255)",
+            "contrast": 5.19
+          },
+          {
+            "id": "severity-filter",
+            "outlineStyle": "solid",
+            "outlineWidth": "2px",
+            "outlineColor": "rgb(9, 105, 218)",
+            "accent": "rgb(9, 105, 218)",
+            "background": "rgb(255, 255, 255)",
+            "contrast": 5.19
+          }
+        ],
+        "totalFindings": 18,
+        "noMatch": {
+          "count": 0,
+          "emptyText": "No findings match the active filters."
+        },
+        "byDimension": {
+          "dimension": "Fit",
+          "count": 1
+        },
+        "narrowed": {
+          "dimension": "Fit",
+          "severity": "critical",
+          "count": 0
+        },
+        "cleared": {
+          "count": 18,
+          "emptyVisible": false
+        }
+      },
+      "stickyHeader": {
+        "scrollY": 500,
+        "top": 0,
+        "position": "sticky",
+        "htmlOverflowX": "visible",
+        "bodyOverflowX": "hidden"
+      },
+      "consoleErrors": [],
+      "screenshots": {
+        "landing": "docs/screenshots/github-native-reviewer-landing-mobile.png",
+        "report": "docs/screenshots/github-native-reviewer-report-mobile.png"
+      }
     },
     {
       "surface": "reviewer",
       "name": "small-mobile",
-      "width": 320,
-      "height": 720,
-      "overflow": 0,
-      "decision": "Pilot",
-      "dimensions": 5,
-      "findings": 18,
-      "evidence": 21,
-      "claims": 6,
-      "consoleErrors": 0
+      "viewport": {
+        "width": 320,
+        "height": 720
+      },
+      "layout": {
+        "innerWidth": 320,
+        "documentWidth": 320,
+        "bodyWidth": 320,
+        "overflow": 0,
+        "bodyBackground": "rgb(255, 255, 255)",
+        "glassBackdrop": "none",
+        "repositoryTabs": 4,
+        "scrollY": 0
+      },
+      "report": {
+        "decision": "Pilot",
+        "dimensions": 5,
+        "findings": 18,
+        "evidence": 21,
+        "claims": 6,
+        "sidebarVisible": true,
+        "decisionBorder": "4px"
+      },
+      "focus": {
+        "tag": "A",
+        "id": "",
+        "outlineStyle": "solid",
+        "outlineWidth": "2px"
+      },
+      "filterKeyboard": {
+        "focus": [
+          {
+            "id": "findings-search",
+            "outlineStyle": "solid",
+            "outlineWidth": "2px",
+            "outlineColor": "rgb(9, 105, 218)",
+            "accent": "rgb(9, 105, 218)",
+            "background": "rgb(255, 255, 255)",
+            "contrast": 5.19
+          },
+          {
+            "id": "dimension-filter",
+            "outlineStyle": "solid",
+            "outlineWidth": "2px",
+            "outlineColor": "rgb(9, 105, 218)",
+            "accent": "rgb(9, 105, 218)",
+            "background": "rgb(255, 255, 255)",
+            "contrast": 5.19
+          },
+          {
+            "id": "severity-filter",
+            "outlineStyle": "solid",
+            "outlineWidth": "2px",
+            "outlineColor": "rgb(9, 105, 218)",
+            "accent": "rgb(9, 105, 218)",
+            "background": "rgb(255, 255, 255)",
+            "contrast": 5.19
+          }
+        ],
+        "totalFindings": 18,
+        "noMatch": {
+          "count": 0,
+          "emptyText": "No findings match the active filters."
+        },
+        "byDimension": {
+          "dimension": "Fit",
+          "count": 1
+        },
+        "narrowed": {
+          "dimension": "Fit",
+          "severity": "critical",
+          "count": 0
+        },
+        "cleared": {
+          "count": 18,
+          "emptyVisible": false
+        }
+      },
+      "stickyHeader": {
+        "scrollY": 500,
+        "top": 0,
+        "position": "sticky",
+        "htmlOverflowX": "visible",
+        "bodyOverflowX": "hidden"
+      },
+      "consoleErrors": [],
+      "screenshots": {
+        "landing": null,
+        "report": "docs/screenshots/github-native-reviewer-report-small-mobile.png"
+      }
+    },
+    {
+      "surface": "reviewer-focus-themes",
+      "themes": {
+        "light": [
+          {
+            "id": "findings-search",
+            "outlineStyle": "solid",
+            "outlineWidth": "2px",
+            "outlineColor": "rgb(9, 105, 218)",
+            "accent": "rgb(9, 105, 218)",
+            "background": "rgb(255, 255, 255)",
+            "contrast": 5.19
+          },
+          {
+            "id": "dimension-filter",
+            "outlineStyle": "solid",
+            "outlineWidth": "2px",
+            "outlineColor": "rgb(9, 105, 218)",
+            "accent": "rgb(9, 105, 218)",
+            "background": "rgb(255, 255, 255)",
+            "contrast": 5.19
+          },
+          {
+            "id": "severity-filter",
+            "outlineStyle": "solid",
+            "outlineWidth": "2px",
+            "outlineColor": "rgb(9, 105, 218)",
+            "accent": "rgb(9, 105, 218)",
+            "background": "rgb(255, 255, 255)",
+            "contrast": 5.19
+          }
+        ],
+        "dark": [
+          {
+            "id": "findings-search",
+            "outlineStyle": "solid",
+            "outlineWidth": "2px",
+            "outlineColor": "rgb(88, 166, 255)",
+            "accent": "rgb(88, 166, 255)",
+            "background": "rgb(13, 17, 23)",
+            "contrast": 7.49
+          },
+          {
+            "id": "dimension-filter",
+            "outlineStyle": "solid",
+            "outlineWidth": "2px",
+            "outlineColor": "rgb(88, 166, 255)",
+            "accent": "rgb(88, 166, 255)",
+            "background": "rgb(13, 17, 23)",
+            "contrast": 7.49
+          },
+          {
+            "id": "severity-filter",
+            "outlineStyle": "solid",
+            "outlineWidth": "2px",
+            "outlineColor": "rgb(88, 166, 255)",
+            "accent": "rgb(88, 166, 255)",
+            "background": "rgb(13, 17, 23)",
+            "contrast": 7.49
+          }
+        ]
+      }
     },
     {
       "surface": "operator",
       "name": "desktop",
-      "width": 1440,
-      "height": 1000,
-      "overflow": 0,
-      "health": "Operational",
-      "execution": "static-only",
-      "endpointRows": 5,
-      "consoleErrors": 0
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "layout": {
+        "innerWidth": 1440,
+        "documentWidth": 1440,
+        "bodyWidth": 1440,
+        "overflow": 0,
+        "bodyBackground": "rgb(255, 255, 255)",
+        "glassBackdrop": "none",
+        "repositoryTabs": 4,
+        "scrollY": 0
+      },
+      "state": {
+        "health": "Operational",
+        "service": "forkwise-runner",
+        "execution": "static-only",
+        "tabs": 4,
+        "endpointRows": 5
+      },
+      "consoleErrors": [],
+      "screenshot": "docs/screenshots/github-native-operator-desktop.png"
     },
     {
       "surface": "operator",
       "name": "mobile",
-      "width": 390,
-      "height": 844,
-      "overflow": 0,
-      "health": "Operational",
-      "execution": "static-only",
-      "endpointRows": 5,
-      "consoleErrors": 0
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "layout": {
+        "innerWidth": 390,
+        "documentWidth": 390,
+        "bodyWidth": 390,
+        "overflow": 0,
+        "bodyBackground": "rgb(255, 255, 255)",
+        "glassBackdrop": "none",
+        "repositoryTabs": 4,
+        "scrollY": 0
+      },
+      "state": {
+        "health": "Operational",
+        "service": "forkwise-runner",
+        "execution": "static-only",
+        "tabs": 4,
+        "endpointRows": 5
+      },
+      "consoleErrors": [],
+      "screenshot": "docs/screenshots/github-native-operator-mobile.png"
     }
   ],
   "checks": [
     "Repository chrome and tabs render",
-    "README and adoption-composer intake layout renders",
+    "README/composer intake layout renders",
     "Actions-style progress and report workspace render",
     "Sample report remains functional",
     "Findings, evidence, claims, dimensions, and sidebar remain populated",
-    "Operator Actions console renders with deterministic mocked health and statistics",
-    "No page-level horizontal overflow at 1440, 768, 390, or 320 pixels",
+    "Operator Actions console renders with mocked health/stats",
+    "No page-level horizontal overflow at 1440, 768, 390, or 320 px",
     "No glass backdrop filter or ambient marketing gradients",
-    "Report screenshots begin at top-level repository chrome",
+    "Report screenshot begins at the top-level repository chrome",
     "Visible keyboard focus",
+    "Finding filters: search and both dropdowns reachable with Tab at every viewport",
+    "Finding filters: theme-accent focus ring with at least 3:1 contrast in light and dark themes",
+    "Finding filters: count, visible empty state, and polite live announcement agree after keyboard input",
+    "Finding filters: clearing all three filters restores every finding",
+    "Sticky site header stays pinned after scrolling at every viewport",
     "No browser console or page errors"
   ]
 }

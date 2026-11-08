@@ -40,6 +40,7 @@ const STAGES = [
 
 let currentAssessment = null;
 let currentAbortController = null;
+let filterAnnouncementTimer = 0;
 
 function createElement(tag, { className = "", text = "", attrs = {}, children = [] } = {}) {
   const element = document.createElement(tag);
@@ -139,6 +140,8 @@ function showReport() {
 
 function showIntake() {
   currentAbortController?.abort();
+  // Leaving the report cancels a pending filter announcement for the hidden findings.
+  window.clearTimeout(filterAnnouncementTimer);
   elements.report.hidden = true;
   elements.progress.hidden = true;
   elements.intake.hidden = false;
@@ -258,13 +261,17 @@ function renderFindings(assessment) {
   filterFindings();
 }
 
+const NO_MATCHING_FINDINGS = "No findings match the active filters.";
+const FILTER_ANNOUNCEMENT_DELAY_MS = 400;
+
 function filterFindings() {
-  if (!currentAssessment) return;
+  if (!currentAssessment) return null;
   const search = byId("findings-search").value.trim().toLowerCase();
   const dimension = byId("dimension-filter").value;
   const severity = byId("severity-filter").value;
+  const cards = $$(".finding-card", byId("findings-list"));
   let count = 0;
-  for (const card of $$(".finding-card", byId("findings-list"))) {
+  for (const card of cards) {
     const visible = (!search || card.dataset.search.includes(search))
       && (dimension === "all" || card.dataset.dimension === dimension)
       && (severity === "all" || card.dataset.severity === severity);
@@ -274,11 +281,26 @@ function filterFindings() {
   byId("findings-count").textContent = String(count);
   let empty = $(".empty-state", byId("findings-list"));
   if (!count && !empty) {
-    empty = createElement("div", { className: "empty-state", text: "No findings match the active filters." });
+    empty = createElement("div", { className: "empty-state", text: NO_MATCHING_FINDINGS });
     byId("findings-list").append(empty);
   } else if (count && empty) {
     empty.remove();
   }
+  return { shown: count, total: cards.length };
+}
+
+// Filter changes from the user are announced through the shared polite live region.
+// Rendering a report does not announce here, so the "review complete" message is kept.
+function filterFindingsAndAnnounce() {
+  const result = filterFindings();
+  if (!result) return;
+  window.clearTimeout(filterAnnouncementTimer);
+  // Wait for a pause in typing, so screen readers hear one summary instead of one per key.
+  filterAnnouncementTimer = window.setTimeout(() => {
+    announce(result.shown
+      ? `Showing ${result.shown} of ${result.total} findings.`
+      : NO_MATCHING_FINDINGS);
+  }, FILTER_ANNOUNCEMENT_DELAY_MS);
 }
 
 function renderOperations(assessment) {
@@ -477,9 +499,9 @@ elements.sampleButton.addEventListener("click", () => {
 });
 
 byId("new-review").addEventListener("click", showIntake);
-byId("findings-search").addEventListener("input", filterFindings);
-byId("dimension-filter").addEventListener("change", filterFindings);
-byId("severity-filter").addEventListener("change", filterFindings);
+byId("findings-search").addEventListener("input", filterFindingsAndAnnounce);
+byId("dimension-filter").addEventListener("change", filterFindingsAndAnnounce);
+byId("severity-filter").addEventListener("change", filterFindingsAndAnnounce);
 
 byId("export-json").addEventListener("click", () => {
   if (!currentAssessment) return;
