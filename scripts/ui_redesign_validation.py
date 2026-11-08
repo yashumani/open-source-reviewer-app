@@ -93,6 +93,208 @@ def layout_metrics(page: Page) -> dict[str, Any]:
     )
 
 
+# Issue #19: keyboard and screen-reader coverage for the finding filters.
+FILTER_CONTROLS = ["findings-search", "dimension-filter", "severity-filter"]
+NO_MATCHING_FINDINGS = "No findings match the active filters."
+# WCAG 2.2 SC 1.4.11 requires 3:1 contrast for focus indicators against adjacent colors.
+MIN_FOCUS_CONTRAST = 3.0
+
+
+def focus_style(page: Page) -> dict[str, Any]:
+    """Describe the focused control's outline, the theme accent, and outline contrast."""
+    return page.evaluate(
+        """() => {
+          const element = document.activeElement;
+          const style = getComputedStyle(element);
+          const probe = document.createElement('span');
+          probe.style.color = 'var(--accent)';
+          document.body.append(probe);
+          const accent = getComputedStyle(probe).color;
+          probe.remove();
+          const channels = (value) => value.match(/[\\d.]+/g).slice(0, 3).map(Number);
+          const luminance = (value) => {
+            const [r, g, b] = channels(value).map((channel) => {
+              const c = channel / 255;
+              return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+            });
+            return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+          };
+          const background = getComputedStyle(document.body).backgroundColor;
+          const [light, dark] = [luminance(style.outlineColor), luminance(background)].sort((a, b) => b - a);
+          return {
+            id: element.id,
+            outlineStyle: style.outlineStyle,
+            outlineWidth: style.outlineWidth,
+            outlineColor: style.outlineColor,
+            accent,
+            background,
+            contrast: Math.round(((light + 0.05) / (dark + 0.05)) * 100) / 100,
+          };
+        }"""
+    )
+
+
+def assert_visible_focus(step: dict[str, Any]) -> None:
+    assert step["outlineStyle"] != "none" and step["outlineWidth"] != "0px", step
+    assert step["outlineColor"] == step["accent"], ("focus ring must use the theme accent", step)
+    assert step["contrast"] >= MIN_FOCUS_CONTRAST, ("focus ring contrast is too low", step)
+
+
+def filter_state(page: Page) -> dict[str, Any]:
+    return page.evaluate(
+        """() => {
+          const cards = [...document.querySelectorAll('#findings-list .finding-card')];
+          const empty = document.querySelector('#findings-list .empty-state');
+          return {
+            count: Number(document.getElementById('findings-count').textContent),
+            visible: cards.filter((card) => !card.hidden && card.getClientRects().length > 0).length,
+            total: cards.length,
+            emptyText: empty ? empty.textContent.trim() : null,
+            emptyVisible: Boolean(empty && empty.getClientRects().length > 0),
+            dimension: document.getElementById('dimension-filter').value,
+            severity: document.getElementById('severity-filter').value,
+            search: document.getElementById('findings-search').value,
+          };
+        }"""
+    )
+
+
+def wait_for_announcement(page: Page, expected: str) -> None:
+    page.wait_for_function(
+        "expected => document.getElementById('live-status').textContent === expected",
+        arg=expected,
+        timeout=5_000,
+    )
+
+
+def active_id(page: Page) -> str:
+    return page.evaluate("() => document.activeElement.id")
+
+
+def validate_filter_keyboard(page: Page) -> dict[str, Any]:
+    """Filter findings using only the keyboard while the report is visible."""
+    live = page.evaluate(
+        """() => {
+          const region = document.getElementById('live-status');
+          return { ariaLive: region.getAttribute('aria-live'), srOnly: region.classList.contains('sr-only') };
+        }"""
+    )
+    assert live == {"ariaLive": "polite", "srOnly": True}, live
+    initial = filter_state(page)
+    total = initial["total"]
+    assert total > 0 and initial["count"] == initial["visible"] == total, initial
+    assert initial["emptyText"] is None, initial
+
+    # Tab through the search field and both dropdowns, with a visible focus ring on each.
+    page.locator("#findings-search").focus()
+    focus_steps = [focus_style(page)]
+    for _ in FILTER_CONTROLS[1:]:
+        page.keyboard.press("Tab")
+        focus_steps.append(focus_style(page))
+    assert [step["id"] for step in focus_steps] == FILTER_CONTROLS, focus_steps
+    for step in focus_steps:
+        assert_visible_focus(step)
+
+    # Type a search with no match: count, visible empty state, and announcement agree.
+    page.keyboard.press("Shift+Tab")
+    page.keyboard.press("Shift+Tab")
+    assert active_id(page) == "findings-search"
+    page.keyboard.type("zz-no-such-finding")
+    wait_for_announcement(page, NO_MATCHING_FINDINGS)
+    empty = filter_state(page)
+    assert empty["count"] == empty["visible"] == 0, empty
+    assert empty["emptyVisible"] and empty["emptyText"] == NO_MATCHING_FINDINGS, empty
+
+    # Clear the search from the keyboard.
+    page.keyboard.press("Control+A")
+    page.keyboard.press("Backspace")
+    wait_for_announcement(page, f"Showing {total} of {total} findings.")
+    restored = filter_state(page)
+    assert restored["count"] == restored["visible"] == total and restored["emptyText"] is None, restored
+
+    # Narrow the list with both dropdowns, using arrow keys only.
+    page.keyboard.press("Tab")
+    page.keyboard.press("ArrowDown")
+    assert active_id(page) == "dimension-filter"
+    by_dimension = filter_state(page)
+    assert by_dimension["dimension"] != "all", by_dimension
+    assert 0 < by_dimension["count"] == by_dimension["visible"] < total, by_dimension
+    assert not by_dimension["emptyVisible"], by_dimension
+    wait_for_announcement(page, f"Showing {by_dimension['count']} of {total} findings.")
+    page.keyboard.press("Tab")
+    page.keyboard.press("ArrowDown")
+    assert active_id(page) == "severity-filter"
+    narrowed = filter_state(page)
+    assert narrowed["dimension"] != "all" and narrowed["severity"] != "all", narrowed
+    shown = narrowed["count"]
+    assert shown == narrowed["visible"] and shown < total, narrowed
+    wait_for_announcement(page, f"Showing {shown} of {total} findings." if shown else NO_MATCHING_FINDINGS)
+    assert narrowed["emptyVisible"] == (shown == 0), narrowed
+
+    # Clear both dropdowns from the keyboard; the full list and count return.
+    page.keyboard.press("Home")
+    page.keyboard.press("Shift+Tab")
+    page.keyboard.press("Home")
+    wait_for_announcement(page, f"Showing {total} of {total} findings.")
+    cleared = filter_state(page)
+    assert (cleared["dimension"], cleared["severity"], cleared["search"]) == ("all", "all", ""), cleared
+    assert cleared["count"] == cleared["visible"] == total and cleared["emptyText"] is None, cleared
+
+    return {
+        "focus": focus_steps,
+        "totalFindings": total,
+        "noMatch": {"count": empty["count"], "emptyText": empty["emptyText"]},
+        "byDimension": {key: by_dimension[key] for key in ("dimension", "count")},
+        "narrowed": {key: narrowed[key] for key in ("dimension", "severity", "count")},
+        "cleared": {"count": cleared["count"], "emptyVisible": cleared["emptyVisible"]},
+    }
+
+
+def validate_sticky_header(page: Page) -> dict[str, Any]:
+    """The global header must stay pinned while the report scrolls (no page-level clipping)."""
+    page.evaluate("() => window.scrollTo(0, 500)")
+    page.wait_for_function("() => window.scrollY >= 400")
+    header = page.evaluate(
+        """() => {
+          const element = document.querySelector('.site-header');
+          return {
+            scrollY: window.scrollY,
+            top: element.getBoundingClientRect().top,
+            position: getComputedStyle(element).position,
+            htmlOverflowX: getComputedStyle(document.documentElement).overflowX,
+            bodyOverflowX: getComputedStyle(document.body).overflowX,
+          };
+        }"""
+    )
+    page.evaluate("() => window.scrollTo(0, 0)")
+    assert header["position"] == "sticky" and abs(header["top"]) <= 1, header
+    return header
+
+
+def validate_focus_themes(browser: Browser, base_url: str) -> dict[str, Any]:
+    """Filter focus rings must use the theme accent with enough contrast in light and dark themes."""
+    themes: dict[str, Any] = {}
+    for scheme in ("light", "dark"):
+        page = browser.new_page(viewport={"width": 1440, "height": 1000}, color_scheme=scheme)
+        errors = collect_errors(page)
+        page.goto(f"{base_url}/index.html", wait_until="networkidle")
+        page.get_by_role("button", name="Load sample").click()
+        page.locator("#report:not([hidden])").wait_for(state="visible", timeout=10_000)
+        page.locator("#findings-search").focus()
+        steps = [focus_style(page)]
+        for _ in FILTER_CONTROLS[1:]:
+            page.keyboard.press("Tab")
+            steps.append(focus_style(page))
+        assert [step["id"] for step in steps] == FILTER_CONTROLS, (scheme, steps)
+        for step in steps:
+            assert_visible_focus(step)
+        assert not errors, (scheme, errors)
+        page.close()
+        themes[scheme] = steps
+    assert themes["light"][0]["accent"] != themes["dark"][0]["accent"], "themes must use different accents"
+    return {"surface": "reviewer-focus-themes", "themes": themes}
+
+
 def validate_reviewer(browser: Browser, base_url: str, name: str, width: int, height: int) -> dict[str, Any]:
     page = browser.new_page(viewport={"width": width, "height": height}, device_scale_factor=1)
     errors = collect_errors(page)
@@ -132,6 +334,12 @@ def validate_reviewer(browser: Browser, base_url: str, name: str, width: int, he
         })"""
     )
 
+    # Issue #19 runs while the report and its filters are visible, before "New review" hides them.
+    filters = validate_filter_keyboard(page)
+    sticky_header = validate_sticky_header(page)
+    filtered_metrics = layout_metrics(page)
+    assert filtered_metrics["overflow"] <= 1, (name, filtered_metrics)
+
     page.locator("#new-review").click()
     page.locator("body").press("Tab")
     focus = page.evaluate(
@@ -163,6 +371,8 @@ def validate_reviewer(browser: Browser, base_url: str, name: str, width: int, he
         "layout": metrics,
         "report": report,
         "focus": focus,
+        "filterKeyboard": filters,
+        "stickyHeader": sticky_header,
         "consoleErrors": errors,
         "screenshots": {
             "landing": str(landing_path.relative_to(ROOT)) if landing_path.exists() else None,
@@ -259,6 +469,7 @@ def main() -> None:
         )
         for name, width, height in VIEWPORTS:
             results.append(validate_reviewer(browser, base_url, name, width, height))
+        results.append(validate_focus_themes(browser, base_url))
         for name, width, height in [("desktop", 1440, 1000), ("mobile", 390, 844)]:
             results.append(validate_operator(browser, base_url, name, width, height))
         browser.close()
@@ -280,6 +491,11 @@ def main() -> None:
             "No glass backdrop filter or ambient marketing gradients",
             "Report screenshot begins at the top-level repository chrome",
             "Visible keyboard focus",
+            "Finding filters: search and both dropdowns reachable with Tab at every viewport",
+            "Finding filters: theme-accent focus ring with at least 3:1 contrast in light and dark themes",
+            "Finding filters: count, visible empty state, and polite live announcement agree after keyboard input",
+            "Finding filters: clearing all three filters restores every finding",
+            "Sticky site header stays pinned after scrolling at every viewport",
             "No browser console or page errors",
         ],
     }
